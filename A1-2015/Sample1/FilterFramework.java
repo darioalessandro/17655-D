@@ -136,7 +136,9 @@ public class FilterFramework extends Thread
 		* while we are waiting. If this happens and we do not check for the end of
 		* stream, then we could wait forever on an upstream pipe that is long gone.
 		* Unfortunately Java pipes do not throw exceptions when the input pipe is
-		* broken.
+		* broken. So what we do here is to see if the upstream filter is alive.
+		* if it is, we assume the pipe is still open and sending data. If the
+		* filter is not alive, then we assume the end of stream has been reached.
 		***********************************************************************/
 
 		try

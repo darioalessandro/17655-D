@@ -66,7 +66,7 @@ public class FilterFramework extends Thread
 
 	class EndOfStreamException extends Exception {
 
-                static final long serialVersionUID = 0; // the version for streaming
+		static final long serialVersionUID = 0; // the version for serializing
 
 		EndOfStreamException () { super(); }
 

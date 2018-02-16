@@ -49,6 +49,7 @@ public class SinkFilter extends FilterFramework
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
 
+
 		/*************************************************************
 		*	First we announce to the world that we are alive...
 		**************************************************************/
@@ -140,7 +141,9 @@ public class SinkFilter extends FilterFramework
 
 				if ( id == 3 )
 				{
+
 					System.out.print( TimeStampFormat.format(TimeStamp.getTime()) + " ID = " + id + " " + Double.longBitsToDouble(measurement) );
+					counter ++;
 
 				} // if
 

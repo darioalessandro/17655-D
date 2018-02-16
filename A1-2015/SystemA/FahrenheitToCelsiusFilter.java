@@ -18,7 +18,7 @@
 *
 ******************************************************************************************************************/
 
-public class MiddleFilter2 extends FilterFramework
+public class FahrenheitToCelsiusFilter extends FilterFramework
 {
 	public void run()
     {
@@ -67,7 +67,8 @@ public class MiddleFilter2 extends FilterFramework
 
 				} // for
 
-				if ( id == 2 ) {
+				if ( id == 4 )
+				{
 					measurement = 0;
 
 					for (i=0; i<MeasurementLength; i++ )
@@ -85,14 +86,15 @@ public class MiddleFilter2 extends FilterFramework
 
 					} // if
 
-					midvalue = Double.longBitsToDouble(measurement) * 0.3048;
+					midvalue = (Double.longBitsToDouble(measurement) - 32) * 5.0 / 9.0;
 					measurement = Double.doubleToLongBits(midvalue);
 					for(i = 0; i < MeasurementLength; i++) {
 						databyte = (byte) ((measurement >> ((7 - i) * 8)) & 0xff);
 						WriteFilterOutputPort(databyte);
 						byteswritten++;
 					}
-				}
+
+				} // if
 
 				else {
 					databyte = ReadFilterInputPort();

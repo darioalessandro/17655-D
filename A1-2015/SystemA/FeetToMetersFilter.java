@@ -18,7 +18,7 @@
 *
 ******************************************************************************************************************/
 
-public class MiddleFilter1 extends FilterFramework
+public class FeetToMetersFilter extends FilterFramework
 {
 	public void run()
     {
@@ -67,8 +67,7 @@ public class MiddleFilter1 extends FilterFramework
 
 				} // for
 
-				if ( id == 4 )
-				{
+				if ( id == 2 ) {
 					measurement = 0;
 
 					for (i=0; i<MeasurementLength; i++ )
@@ -86,15 +85,14 @@ public class MiddleFilter1 extends FilterFramework
 
 					} // if
 
-					midvalue = (Double.longBitsToDouble(measurement) - 32) * 5.0 / 9.0;
+					midvalue = Double.longBitsToDouble(measurement) * 0.3048;
 					measurement = Double.doubleToLongBits(midvalue);
 					for(i = 0; i < MeasurementLength; i++) {
 						databyte = (byte) ((measurement >> ((7 - i) * 8)) & 0xff);
 						WriteFilterOutputPort(databyte);
 						byteswritten++;
 					}
-
-				} // if
+				}
 
 				else {
 					databyte = ReadFilterInputPort();

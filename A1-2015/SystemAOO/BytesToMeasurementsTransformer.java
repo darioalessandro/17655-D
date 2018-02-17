@@ -1,10 +1,10 @@
 import java.io.*;
-import java.util.*;						// This class is used to interpret time words
-import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
+import java.util.*;                        // This class is used to interpret time words
+import java.text.SimpleDateFormat;        // This class is used to format and write time in a string format.
 
 public class BytesToMeasurementsTransformer extends FilterFramework {
-	int MeasurementLength = 8;		// This is the length of all measurements (including time) in bytes
-	int IdLength = 4;				// This is the length of IDs in the byte stream
+    int MeasurementLength = 8;        // This is the length of all measurements (including time) in bytes
+    int IdLength = 4;                // This is the length of IDs in the byte stream
 
     public void run() {
         /************************************************************************************
@@ -16,18 +16,18 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
         Calendar TimeStamp = Calendar.getInstance();
         SimpleDateFormat TimeStampFormat = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
 
-        byte databyte = 0;				// This is the data byte read from the stream
-        int bytesread = 0;				// This is the number of bytes read from the stream
+        byte databyte = 0;                // This is the data byte read from the stream
+        int bytesread = 0;                // This is the number of bytes read from the stream
 
-        long measurement;				// This is the word used to store all measurements - conversions are illustrated.
-        int id;							// This is the measurement id
-        int i;							// This is a loop counter
+        long measurement;                // This is the word used to store all measurements - conversions are illustrated.
+        int id;                            // This is the measurement id
+        int i;                            // This is a loop counter
 
         /*************************************************************
          *	First we announce to the world that we are alive...
          **************************************************************/
 
-        System.out.print( "\n" + this.getName() + "::BytesToMeasurementsTransformer ");
+        System.out.print("\n" + this.getName() + "::BytesToMeasurementsTransformer ");
         Measurement m = new Measurement();
         while (true) {
             try {
@@ -38,14 +38,14 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
 
                 id = 0;
 
-                for (i=0; i<this.IdLength; i++ ) {
-                    databyte = ReadFilterInputPort();	// This is where we read the byte from the stream...
-                    id = id | (databyte & 0xFF);		// We append the byte on to ID...
-                    if (i != this.IdLength-1) {			// If this is not the last byte, then slide the
-                                                        // previously appended byte to the left by one byte
-                        id = id << 8;					// to make room for the next byte we append to the ID
+                for (i = 0; i < this.IdLength; i++) {
+                    databyte = ReadFilterInputPort();    // This is where we read the byte from the stream...
+                    id = id | (databyte & 0xFF);        // We append the byte on to ID...
+                    if (i != this.IdLength - 1) {            // If this is not the last byte, then slide the
+                        // previously appended byte to the left by one byte
+                        id = id << 8;                    // to make room for the next byte we append to the ID
                     }
-                    bytesread++;						// Increment the byte count
+                    bytesread++;                        // Increment the byte count
                 }
 
                 /****************************************************************************
@@ -62,14 +62,14 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
 
                 measurement = 0;
 
-                for (i=0; i<this.MeasurementLength; i++ ) {
+                for (i = 0; i < this.MeasurementLength; i++) {
                     databyte = ReadFilterInputPort();
-                    measurement = measurement | (databyte & 0xFF);	// We append the byte on to measurement...
-                    if (i != this.MeasurementLength-1) {			// If this is not the last byte, then slide the
-                    											    // previously appended byte to the left by one byte
-                        measurement = measurement << 8;				// to make room for the next byte we append to the
+                    measurement = measurement | (databyte & 0xFF);    // We append the byte on to measurement...
+                    if (i != this.MeasurementLength - 1) {            // If this is not the last byte, then slide the
+                        // previously appended byte to the left by one byte
+                        measurement = measurement << 8;                // to make room for the next byte we append to the
                     }
-                    bytesread++;									// Increment the byte count
+                    bytesread++;                                    // Increment the byte count
                 }
 
                 /****************************************************************************
@@ -83,7 +83,7 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
                  // illustrated below.
                  ****************************************************************************/
 
-                if ( id == 0 ) {
+                if (id == 0) {
                     TimeStamp.setTimeInMillis(measurement);
                     m.timestamp = TimeStamp.getTime();
                 } else {
@@ -121,11 +121,9 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
              *	The EndOfStreamExeception below is thrown when you reach end of the input
              *	stream (duh). At this point, the filter ports are closed and a message is
              *	written letting the user know what is going on.
-             ********************************************************************************/
-
-            catch (EndOfStreamException e) {
+             ********************************************************************************/ catch (EndOfStreamException e) {
                 ClosePorts();
-                System.out.print( "\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread );
+                System.out.print("\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread);
                 break;
             }
         }

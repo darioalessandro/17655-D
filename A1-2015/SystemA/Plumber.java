@@ -1,52 +1,54 @@
-/******************************************************************************************************************
-* File:Plumber.java
-* Course: 17655
-* Project: Assignment 1
-* Copyright: Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*	1.0 November 2008 - Sample Pipe and Filter code (ajl).
-*   1.1 February 2017 - System A implementation.
-*
-* Description:
-* System A implementation.
-*
-* Parameters: 		None
-*
-* Internal Methods:	None
-*
-******************************************************************************************************************/
-public class Plumber
-{
-   public static void main( String argv[])
-   {
-		/****************************************************************************
-		* Here we instantiate three filters.
-		****************************************************************************/
+import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 
-		SourceFilter fileReaderSource = new SourceFilter();
-	    FahrenheitToCelsiusFilter fahrenheitToCelsius = new FahrenheitToCelsiusFilter();
-	    FeetToMetersFilter feetToMeters = new FeetToMetersFilter();
-		SinkFilter sink = new SinkFilter();
+public class Plumber {
+    public static void main(String argv[]) {
 
-		/****************************************************************************
-		* Here we connect the filters starting with the sink filter (sink) which
-		* we connect to feetToMeters the fahrenheitToCelsius filter. Then we connect fahrenheitToCelsius to the
-		* source filter (fileReaderSource).
-		****************************************************************************/
+        /**
+         * Create date and number formatters
+         */
+        SimpleDateFormat timeStampFormatter = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
+        DecimalFormat temperatureFormatter = new DecimalFormat("000.00000");
+        DecimalFormat altitudeFormatter = new DecimalFormat("00000.00000");
 
-	    sink.Connect(feetToMeters);
-	    feetToMeters.Connect(fahrenheitToCelsius); // This esstially says, "connect Filter3 input port to Filter2 output port
-	    fahrenheitToCelsius.Connect(fileReaderSource); // This esstially says, "connect Filter2 intput port to Filter1 output port
+        /****************************************************************************
+         * Here we instantiate 4 filters.
+         ****************************************************************************/
 
-		/****************************************************************************
-		* Here we start the filters up. All-in-all,... its really kind of boring.
-		****************************************************************************/
+        SourceFileReader fileReaderSource = new SourceFileReader("../DataSets/FlightData.dat");
+        BytesToMeasurementsTransformer bytesToMeasurements = new BytesToMeasurementsTransformer();
+        SinkMeasurementPrinter sink = new SinkMeasurementPrinter(
+            "OutputA.dat",
+            "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "\n",
+            (m) -> {
+            return timeStampFormatter.format(m.timestamp) + "\t" +
+                    temperatureFormatter.format(m.temperature) + "\t" +
+                    altitudeFormatter.format(m.altitude) + "\n";
+        });
 
-	    fileReaderSource.start();
-	    fahrenheitToCelsius.start();
-		feetToMeters.start();
-	    sink.start();
+        TransformMeasurementFilter transformTemperatureAndConvertAltitude = new TransformMeasurementFilter((m) -> {
+            m.temperature = (m.temperature - 32) * 5 / 9; // F -> C
+            m.altitude = m.altitude * 0.3048; // Feet to meters.
+            return m;
+        });
 
-   } // main
+        /****************************************************************************
+         * Here we connect the filters starting with the sink filter (sink) which
+         * we connect to feetToMeters the fahrenheitToCelsius filter. Then we connect fahrenheitToCelsius to the
+         * source filter (fileReaderSource).
+         ****************************************************************************/
 
-} // Plumber
+        sink.Connect(transformTemperatureAndConvertAltitude);
+        transformTemperatureAndConvertAltitude.Connect(bytesToMeasurements);
+        bytesToMeasurements.Connect(fileReaderSource);
+
+        /****************************************************************************
+         * Here we start the filters up. All-in-all,... its really kind of boring.
+         ****************************************************************************/
+
+        fileReaderSource.start();
+        bytesToMeasurements.start();
+        sink.start();
+        transformTemperatureAndConvertAltitude.start();
+    }
+}

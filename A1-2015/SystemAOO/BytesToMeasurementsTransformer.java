@@ -1,0 +1,161 @@
+/******************************************************************************************************************
+* File:BytesToMeasurementsTransformer.java
+* Course: 17655
+* Project: Assignment 1
+* Copyright: Copyright (c) 2003 Carnegie Mellon University
+* Versions:
+*	1.0 November 2008 - Initial rewrite of original assignment 1 (ajl).
+*
+* Description:
+*
+* This class serves as a template for creating filters. The details of threading, filter connections, input, and output
+* are contained in the FilterFramework super class. In order to use this template the program should rename the class.
+* The template includes the run() method which is executed when the filter is started.
+* The run() method is the guts of the filter and is where the programmer should put their filter specific code.
+* In the template there is a main read-write loop for reading from the input port of the filter and writing to the
+* output port of the filter. This template assumes that the filter is a "normal" that it both reads and writes data.
+* That is both the input and output ports are used - its input port is connected to a pipe from an up-stream filter and
+* its output port is connected to a pipe to a down-stream filter. In cases where the filter is a source or sink, you
+* should use the SourceFileReader.java or SinkMeasurementPrinter.java as a starting point for creating source or sink
+* filters.
+*
+* Parameters: 		None
+*
+* Internal Methods:
+*
+*	public void run() - this method must be overridden by this class.
+*
+******************************************************************************************************************/
+import java.io.*;
+import java.util.*;						// This class is used to interpret time words
+import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
+
+public class BytesToMeasurementsTransformer extends FilterFramework {
+	int MeasurementLength = 8;		// This is the length of all measurements (including time) in bytes
+	int IdLength = 4;				// This is the length of IDs in the byte stream
+
+    public void run() {
+        /************************************************************************************
+         *	TimeStamp is used to compute time using java.util's Calendar class.
+         * 	TimeStampFormat is used to format the time value so that it can be easily printed
+         *	to the terminal.
+         *************************************************************************************/
+
+        Calendar TimeStamp = Calendar.getInstance();
+        SimpleDateFormat TimeStampFormat = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
+
+        byte databyte = 0;				// This is the data byte read from the stream
+        int bytesread = 0;				// This is the number of bytes read from the stream
+
+        long measurement;				// This is the word used to store all measurements - conversions are illustrated.
+        int id;							// This is the measurement id
+        int i;							// This is a loop counter
+
+        /*************************************************************
+         *	First we announce to the world that we are alive...
+         **************************************************************/
+
+        System.out.print( "\n" + this.getName() + "::BytesToMeasurementsTransformer ");
+        Measurement m = new Measurement();
+        while (true) {
+            try {
+                /***************************************************************************
+                 // We know that the first data coming to this filter is going to be an ID and
+                 // that it is IdLength long. So we first decommutate the ID bytes.
+                 ****************************************************************************/
+
+                id = 0;
+
+                for (i=0; i<this.IdLength; i++ ) {
+                    databyte = ReadFilterInputPort();	// This is where we read the byte from the stream...
+                    id = id | (databyte & 0xFF);		// We append the byte on to ID...
+                    if (i != this.IdLength-1) {			// If this is not the last byte, then slide the
+                                                        // previously appended byte to the left by one byte
+                        id = id << 8;					// to make room for the next byte we append to the ID
+                    }
+                    bytesread++;						// Increment the byte count
+                }
+
+                /****************************************************************************
+                 // Here we read measurements. All measurement data is read as a stream of bytes
+                 // and stored as a long value. This permits us to do bitwise manipulation that
+                 // is neccesary to convert the byte stream into data words. Note that bitwise
+                 // manipulation is not permitted on any kind of floating point types in Java.
+                 // If the id = 0 then this is a time value and is therefore a long value - no
+                 // problem. However, if the id is something other than 0, then the bits in the
+                 // long value is really of type double and we need to convert the value using
+                 // Double.longBitsToDouble(long val) to do the conversion which is illustrated.
+                 // below.
+                 *****************************************************************************/
+
+                measurement = 0;
+
+                for (i=0; i<this.MeasurementLength; i++ ) {
+                    databyte = ReadFilterInputPort();
+                    measurement = measurement | (databyte & 0xFF);	// We append the byte on to measurement...
+                    if (i != this.MeasurementLength-1) {			// If this is not the last byte, then slide the
+                    											    // previously appended byte to the left by one byte
+                        measurement = measurement << 8;				// to make room for the next byte we append to the
+                    }
+                    bytesread++;									// Increment the byte count
+                }
+
+                /****************************************************************************
+                 // Here we look for an ID of 0 which indicates this is a time measurement.
+                 // Every frame begins with an ID of 0, followed by a time stamp which correlates
+                 // to the time that each proceeding measurement was recorded. Time is stored
+                 // in milliseconds since Epoch. This allows us to use Java's calendar class to
+                 // retrieve time and also use text format classes to format the output into
+                 // a form humans can read. So this provides great flexibility in terms of
+                 // dealing with time arithmetically or for string display purposes. This is
+                 // illustrated below.
+                 ****************************************************************************/
+
+                if ( id == 0 ) {
+                    TimeStamp.setTimeInMillis(measurement);
+                    m.timestamp = TimeStamp.getTime();
+                } else {
+                    double value = Double.longBitsToDouble(measurement);
+                    switch (id) {
+                        case 1:
+                            m.velocity = value;
+                            break;
+                        case 2:
+                            m.altitude = value;
+                            break;
+                        case 3:
+                            m.pressure = value;
+                            break;
+                        case 4:
+                            m.temperature = value;
+                            break;
+                        case 5:
+                            m.attitude = value;
+                            break;
+                        default:
+                            System.out.println("unknown id: " + id);
+                    }
+                }
+                if (id == 5) {
+                    try {
+                        ObjectOutputStream OutputWritePorto = new ObjectOutputStream(this.OutputWritePort);
+                        OutputWritePorto.writeObject(m);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            /*******************************************************************************
+             *	The EndOfStreamExeception below is thrown when you reach end of the input
+             *	stream (duh). At this point, the filter ports are closed and a message is
+             *	written letting the user know what is going on.
+             ********************************************************************************/
+
+            catch (EndOfStreamException e) {
+                ClosePorts();
+                System.out.print( "\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread );
+                break;
+            }
+        }
+    }
+}

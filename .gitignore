@@ -2,7 +2,7 @@
 *.exe
 
 # IntelliJ file
-A1-2015/.idea/
+.idea
 *.iml
 
 # Compiled class file

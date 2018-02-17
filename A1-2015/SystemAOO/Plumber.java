@@ -3,16 +3,20 @@ import java.text.DecimalFormat;
 
 public class Plumber {
     public static void main(String argv[]) {
-        /****************************************************************************
-         * Here we instantiate three filters.
-         ****************************************************************************/
 
-        SourceFileReader fileReaderSource = new SourceFileReader("../DataSets/FlightData.dat");
-        BytesToMeasurementsTransformer bytesToMeasurements = new BytesToMeasurementsTransformer();
+        /**
+         * Create date and number formatters
+         */
         SimpleDateFormat timeStampFormatter = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
         DecimalFormat temperatureFormatter = new DecimalFormat("000.00000");
         DecimalFormat altitudeFormatter = new DecimalFormat("00000.00000");
 
+        /****************************************************************************
+         * Here we instantiate 4 filters.
+         ****************************************************************************/
+
+        SourceFileReader fileReaderSource = new SourceFileReader("../DataSets/FlightData.dat");
+        BytesToMeasurementsTransformer bytesToMeasurements = new BytesToMeasurementsTransformer();
         SinkMeasurementPrinter sink = new SinkMeasurementPrinter(
                 "OutputA.dat",
                 "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "\n",

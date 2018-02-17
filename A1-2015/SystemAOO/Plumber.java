@@ -18,13 +18,13 @@ public class Plumber {
         SourceFileReader fileReaderSource = new SourceFileReader("../DataSets/FlightData.dat");
         BytesToMeasurementsTransformer bytesToMeasurements = new BytesToMeasurementsTransformer();
         SinkMeasurementPrinter sink = new SinkMeasurementPrinter(
-                "OutputA.dat",
-                "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "\n",
-                (m) -> {
-                    return timeStampFormatter.format(m.timestamp) + "\t" +
-                            temperatureFormatter.format(m.temperature) + "\t" +
-                            altitudeFormatter.format(m.altitude) + "\n";
-                });
+            "OutputA.dat",
+            "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "\n",
+            (m) -> {
+            return timeStampFormatter.format(m.timestamp) + "\t" +
+                    temperatureFormatter.format(m.temperature) + "\t" +
+                    altitudeFormatter.format(m.altitude) + "\n";
+        });
 
         TransformMeasurementFilter transformTemperatureAndConvertAltitude = new TransformMeasurementFilter((m) -> {
             m.temperature = (m.temperature - 32) * 5 / 9; // F -> C

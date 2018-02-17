@@ -1,22 +1,3 @@
-/******************************************************************************************************************
-* File:SourceFileReader.java
-* Course: 17655
-* Project: Assignment 1
-* Copyright: Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*	1.0 November 2008 - Initial rewrite of original assignment 1 (ajl).
-*
-* Description:
-*
-* Reads bytes and writes Measurement objects.
-*
-* Parameters: 		None
-*
-* Internal Methods:
-*
-*	public void run() - this method must be overridden by this class.
-*
-******************************************************************************************************************/
 import java.io.*;
 
 public class SourceFileReader extends FilterFramework {

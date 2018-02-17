@@ -1,31 +1,3 @@
-/******************************************************************************************************************
-* File:SinkMeasurementPrinter.java
-* Course: 17655
-* Project: Assignment 1
-* Copyright: Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*	1.0 November 2008 - Initial rewrite of original assignment 1 (ajl).
-*
-* Description:
-*
-* This class serves as a template for creating sink filters. The details of threading, connections writing output
-* are contained in the FilterFramework super class. In order to use this template the program should rename the class.
-* The template includes the run() method which is executed when the filter is started.
-* The run() method is the guts of the filter and is where the programmer should put their filter specific code.
-* In the template there is a main read-write loop for reading from the input port of the filter. The programmer is
-* responsible for writing the data to a file, or device of some kind. This template assumes that the filter is a sink
-* filter that reads data from the input file and writes the output from this filter to a file or device of some kind.
-* In this case, only the input port is used by the filter. In cases where the filter is a standard filter or a source
-* filter, you should use the BytesToMeasurementsTransformer.java or the SourceFileReader.java as a starting point for creating
-* standard or source filters.
-*
-* Parameters: 		None
-*
-* Internal Methods:
-*
-*	public void run() - this method must be overridden by this class.
-*
-******************************************************************************************************************/
 import java.io.*;
 import java.util.*;						// This class is used to interpret time words
 

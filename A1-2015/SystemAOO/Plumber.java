@@ -1,22 +1,5 @@
-/******************************************************************************************************************
-* File:Plumber.java
-* Course: 17655
-* Project: Assignment 1
-* Copyright: Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*	1.0 November 2008 - Sample Pipe and Filter code (ajl).
-*   1.1 February 2017 - System A implementation.
-*
-* Description:
-* System A implementation.
-*
-* Parameters: 		None
-*
-* Internal Methods:	None
-*
-******************************************************************************************************************/
-import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
-import java.text.DecimalFormat;		// This class is used to format and write time in a string format.
+import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 
 public class Plumber
 {

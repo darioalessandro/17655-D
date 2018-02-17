@@ -18,7 +18,6 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
 
         byte databyte = 0;                // This is the data byte read from the stream
         int bytesread = 0;                // This is the number of bytes read from the stream
-
         long measurement;                // This is the word used to store all measurements - conversions are illustrated.
         int id;                            // This is the measurement id
         int i;                            // This is a loop counter
@@ -41,8 +40,8 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
                 for (i = 0; i < this.IdLength; i++) {
                     databyte = ReadFilterInputPort();    // This is where we read the byte from the stream...
                     id = id | (databyte & 0xFF);        // We append the byte on to ID...
-                    if (i != this.IdLength - 1) {            // If this is not the last byte, then slide the
-                        // previously appended byte to the left by one byte
+                    // If this is not the last byte, then slide the previously appended byte to the left by one byte
+                    if (i != this.IdLength - 1) {
                         id = id << 8;                    // to make room for the next byte we append to the ID
                     }
                     bytesread++;                        // Increment the byte count
@@ -65,8 +64,8 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
                 for (i = 0; i < this.MeasurementLength; i++) {
                     databyte = ReadFilterInputPort();
                     measurement = measurement | (databyte & 0xFF);    // We append the byte on to measurement...
-                    if (i != this.MeasurementLength - 1) {            // If this is not the last byte, then slide the
-                        // previously appended byte to the left by one byte
+                    // If this is not the last byte, then slide the previously appended byte to the left by one byte
+                    if (i != this.MeasurementLength - 1) {
                         measurement = measurement << 8;                // to make room for the next byte we append to the
                     }
                     bytesread++;                                    // Increment the byte count
@@ -121,7 +120,8 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
              *	The EndOfStreamExeception below is thrown when you reach end of the input
              *	stream (duh). At this point, the filter ports are closed and a message is
              *	written letting the user know what is going on.
-             ********************************************************************************/ catch (EndOfStreamException e) {
+             ********************************************************************************/
+            catch (EndOfStreamException e) {
                 ClosePorts();
                 System.out.print("\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread);
                 break;

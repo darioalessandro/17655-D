@@ -31,6 +31,8 @@ public class Plumber
 	    FeetToMetersFilter feetToMeters = new FeetToMetersFilter();
 		PressureFilter pressure = new PressureFilter();
 		SinkFilter sink = new SinkFilter();
+		SinkFilterWildPoint sinkwildpoint = new SinkFilterWildPoint();
+		
 
 		/****************************************************************************
 		* Here we connect the filters starting with the sink filter (Filter 1) which
@@ -38,7 +40,8 @@ public class Plumber
 		* source filter (sink).
 		****************************************************************************/
 
-		sink.Connect(pressure); // This esstially says, "connect sink input port to pressure output port
+		sink.Connect(pressure, 1); // This esstially says, "connect sink input port to pressure output port
+		sinkwildpoint.Connect(pressure, 2);
 		pressure.Connect(feetToMeters); // This esstially says, "connect pressure intput port to "source" output port
 		feetToMeters.Connect(fahrenheitToCelsius); // This esstially says, "connect pressure intput port to "source" output port
 		fahrenheitToCelsius.Connect(source);
@@ -52,6 +55,7 @@ public class Plumber
 		feetToMeters.start();
 		pressure.start();
 		sink.start();
+		sinkwildpoint.start();
 
    } // main
 

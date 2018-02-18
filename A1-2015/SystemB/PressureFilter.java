@@ -20,7 +20,7 @@
 import java.util.*;						// This class is used to interpret time words
 import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
 
-public class PressureFilter extends FilterFramework
+public class PressureFilter extends FilterFrameworkWildPoint
 {
 
 	public void run()
@@ -39,6 +39,9 @@ public class PressureFilter extends FilterFramework
 		int byteswritten = 0;			// Number of bytes written to the stream.
 		byte databyte = 0;				// The byte of data read from the file
 		double midvalue;
+		boolean wildpoint = false;
+		byte[] datastreams = new byte[100];
+	    int streamindex = 0;
 
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
@@ -49,12 +52,20 @@ public class PressureFilter extends FilterFramework
 		Double nextvalue;				// next measurement
 		Double pressurecomp;			// prevvalue - currentvalue
 
+		double midvaluewildpoint = 0.0;
+		long wildpointmeasurement;
+		byte[] wildpointstreams = new byte[100];
+		int wildpointstreams_length = 0;
+
 		// Next we write a message to the terminal to let the world know we are alive...
 
 		System.out.print( "\n" + this.getName() + "::Pressure Reading ");
 
 		while (true)
 		{
+			wildpoint = false;
+			streamindex = 0;
+			wildpointstreams_length = 0;
 			/*************************************************************
 			*	Here we read a byte and write a byte
 			*************************************************************/
@@ -78,14 +89,14 @@ public class PressureFilter extends FilterFramework
 
 					bytesread++;						// Increment the byte count
 
-					WriteFilterOutputPort(databyte);
-					byteswritten++;
+					//WriteFilterOutputPort(databyte, 1);
+					//byteswritten++;
+					datastreams[streamindex++] = databyte;
 
 				} // for
 
 				if ( id == 3 )
 				{
-
 					measurement = 0;
 
 					for (i=0; i<MeasurementLength; i++ )
@@ -114,10 +125,17 @@ public class PressureFilter extends FilterFramework
 						pressurecomp = midvalue - prevvalue;
 						if(pressurecomp > 10.0 || midvalue < 0.0 || pressurecomp < 0.0)
 						{
-							midvalue = prevvalue;    // TODO: (prev + next value) / 2
+							wildpoint = true;
+							midvaluewildpoint = midvalue;
+
+
+                            System.arraycopy( datastreams, 0, wildpointstreams, 0, datastreams.length );    // copy id data
+                            wildpointstreams_length = streamindex;
+
+							midvalue = prevvalue;
                     	}
 
-                    	map.put( "prev", prevvalue ); // may be we can remove the map variable ??
+                    	map.put( "prev", prevvalue );           // may be we can remove the map variable ??
 					}
 
 					map.put( "current", midvalue );
@@ -125,17 +143,48 @@ public class PressureFilter extends FilterFramework
 					measurement = Double.doubleToLongBits(midvalue);
 					for(i = 0; i < MeasurementLength; i++) {
 						databyte = (byte) ((measurement >> ((7 - i) * 8)) & 0xFF);
-						WriteFilterOutputPort(databyte);
-						//WriteFilterOutputPort((byte) 01010101);
-						byteswritten++;
+						//WriteFilterOutputPort(databyte, 1);
+						//byteswritten++;
+						datastreams[streamindex++] = databyte;
+					}
+
+					if(wildpoint)
+					{
+						wildpointmeasurement = Double.doubleToLongBits(midvaluewildpoint);
+						//wildpointstreams_length = streamindex;
+					    for(i = 0; i < MeasurementLength; i++) {
+							databyte = (byte) ((wildpointmeasurement >> ((7 - i) * 8)) & 0xFF);
+							wildpointstreams[wildpointstreams_length++] = databyte;
+						}
 					}
 				} 
 				else
 				{
 					databyte = ReadFilterInputPort();
 					bytesread++;
-					WriteFilterOutputPort(databyte);
+					//WriteFilterOutputPort(databyte, 1);
+					//byteswritten++;
+					datastreams[streamindex++] = databyte;
+
+					if(wildpoint)
+					{
+						wildpointstreams[wildpointstreams_length++] = databyte;
+					}
+				}
+
+				for (int j = 0; j < streamindex; j++)
+				{
+					WriteFilterOutputPort(datastreams[j], 1);
 					byteswritten++;
+				}
+
+				if(wildpoint)
+				{
+					for (int j = 0; j < wildpointstreams.length; j++)
+					{
+						WriteFilterOutputPort(wildpointstreams[j], 2);
+					    byteswritten++;
+					}
 				}
 
 			} // try

@@ -26,6 +26,7 @@
 import java.io.*;
 import java.util.*;						// This class is used to interpret time words
 import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
+import java.text.DecimalFormat;
 
 public class SinkFilter extends FilterFrameworkWildPoint
 {
@@ -39,6 +40,10 @@ public class SinkFilter extends FilterFrameworkWildPoint
 
 		Calendar TimeStamp = Calendar.getInstance();
 		SimpleDateFormat TimeStampFormat = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
+		DecimalFormat temperatureFormatter = new DecimalFormat("000.00000");
+		DecimalFormat altitudeFormatter = new DecimalFormat("00000.00000");
+		DecimalFormat pressureFormatter = new DecimalFormat("00.00000");
+
 
 		String fileName = "OutputB.dat";
 		DataOutputStream outStream = null;
@@ -67,7 +72,7 @@ public class SinkFilter extends FilterFrameworkWildPoint
 		try
 		{
 			outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-			outStream.writeUTF("Time:\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (PSI):\t" + "\n");
+			outStream.writeUTF("Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (PSI):\t" + "\n");
 			while (true)
 			{
 				try
@@ -166,10 +171,16 @@ public class SinkFilter extends FilterFrameworkWildPoint
 
 					} // if
 
-					System.out.print(TimeStampFormat.format(TimeStamp.getTime()) + "\t" + temp + "\t" + alt + "\t" + pressure);
+					System.out.print(TimeStampFormat.format(TimeStamp.getTime()) + "\t" +
+							temperatureFormatter.format(temp) + "\t" +
+							altitudeFormatter.format(alt) + "\t" +
+							pressureFormatter.format(pressure));
 					System.out.print("\n");
 
-					outStream.writeUTF(TimeStampFormat.format(TimeStamp.getTime()) + "\t" + temp + "\t" + alt + "\t" + pressure + "\n");
+					outStream.writeUTF(TimeStampFormat.format(TimeStamp.getTime()) + "\t" +
+							temperatureFormatter.format(temp) + "\t" +
+							altitudeFormatter.format(alt) + "\t" +
+							pressureFormatter.format(pressure) + "\n");
 
 				} // try
 

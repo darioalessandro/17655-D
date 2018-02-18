@@ -27,7 +27,7 @@ import java.io.*;
 import java.util.*;						// This class is used to interpret time words
 import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
 
-public class SinkFilter extends FilterFrameworkWildPoint
+public class SinkFilterWildPoint extends FilterFrameworkWildPoint
 {
 	public void run()
     {
@@ -40,7 +40,7 @@ public class SinkFilter extends FilterFrameworkWildPoint
 		Calendar TimeStamp = Calendar.getInstance();
 		SimpleDateFormat TimeStampFormat = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
 
-		String fileName = "OutputB.dat";
+		String fileName = "WildPoints.dat"; //"OutputB.dat";
 		DataOutputStream outStream = null;
 
 		int MeasurementLength = 8;		// This is the length of all measurements (including time) in bytes
@@ -53,8 +53,6 @@ public class SinkFilter extends FilterFrameworkWildPoint
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
 
-		double temp = 0;
-		double alt = 0;
 		double pressure = 0;
 
 
@@ -67,7 +65,7 @@ public class SinkFilter extends FilterFrameworkWildPoint
 		try
 		{
 			outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-			outStream.writeUTF("Time:\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (PSI):\t" + "\n");
+			outStream.writeUTF("Time:\t" + "Temperature (C):\t" + "Pressure (PSI):\t" + "\n");
 			while (true)
 			{
 				try
@@ -151,25 +149,15 @@ public class SinkFilter extends FilterFrameworkWildPoint
 					// in.
 					****************************************************************************/
 
-					if (id == 4) {
-						temp = Double.longBitsToDouble(measurement);
-
-					} // if
-
-					if (id == 2) {
-						alt = Double.longBitsToDouble(measurement);
-
-					} // if
-
 					if (id == 3) {
 						pressure = Double.longBitsToDouble(measurement);
 
 					} // if
 
-					System.out.print(TimeStampFormat.format(TimeStamp.getTime()) + "\t" + temp + "\t" + alt + "\t" + pressure);
+					System.out.print(TimeStampFormat.format(TimeStamp.getTime()) + "\t" + pressure);
 					System.out.print("\n");
 
-					outStream.writeUTF(TimeStampFormat.format(TimeStamp.getTime()) + "\t" + temp + "\t" + alt + "\t" + pressure + "\n");
+					outStream.writeUTF(TimeStampFormat.format(TimeStamp.getTime()) + "\t" + pressure + "\n");
 
 				} // try
 

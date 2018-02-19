@@ -23,28 +23,35 @@ public class Plumber
    public static void main( String argv[])
    {
 		/****************************************************************************
-		* Here we instantiate three filters.
+		* Here we instantiate six filters.
 		****************************************************************************/
 
 		SourceFilter source = new SourceFilter();
 		FahrenheitToCelsiusFilter fahrenheitToCelsius = new FahrenheitToCelsiusFilter();
-	    FeetToMetersFilter feetToMeters = new FeetToMetersFilter();
+	  FeetToMetersFilter feetToMeters = new FeetToMetersFilter();
 		PressureFilter pressure = new PressureFilter();
 		SinkFilter sink = new SinkFilter();
 		SinkFilterWildPoint sinkwildpoint = new SinkFilterWildPoint();
-		
+
 
 		/****************************************************************************
-		* Here we connect the filters starting with the sink filter (Filter 1) which
-		* we connect to pressure the middle filter. Then we connect pressure to the
-		* source filter (sink).
+		* Here we connect the filters starting with the source filter (source) which
+		* we connect to the Fahrenheit To Celsius Filter (fahrenheitToCelsius) to
+    * modify the tempature. Then we connect Fahrenheit To Celsius Filter
+    * (fahrenheitToCelsius) to the Feet To Meters Filter (feetToMeters)
+    * to modify the altitude. Then we connect the Feet To Meters Filter (feetToMeters)
+    * to the Pressure Filter (pressure) to determine if the pressure data is valid or
+    * if it is a wildpoint (varies more than 10PSI between samples and/or is negative).
+    * Then pressure is connect to the Sink Wildpoint Filter (sinkwildpoint).
+    * Then pressure is also connected to the Sink Filter (sink).
 		****************************************************************************/
 
-		sink.Connect(pressure, 1); // This esstially says, "connect sink input port to pressure output port
-		sinkwildpoint.Connect(pressure, 2);
-		pressure.Connect(feetToMeters); // This esstially says, "connect pressure intput port to "source" output port
-		feetToMeters.Connect(fahrenheitToCelsius); // This esstially says, "connect pressure intput port to "source" output port
-		fahrenheitToCelsius.Connect(source);
+
+		sink.Connect(pressure, 1); // This esstially says, "connect the sink filter input port to the pressure filter output port"
+		sinkwildpoint.Connect(pressure, 2);  //This essentially says, "connect the wildpoint sink filter input port to the pressure filter output port"
+		pressure.Connect(feetToMeters); // This esstially says, "connect pressure filter to Feet input port to Meters Filter output port"
+		feetToMeters.Connect(fahrenheitToCelsius); // This esstially says, "connect Feet to Meters Filter input port to the Fahrenheit to Celsius Filter output port"
+		fahrenheitToCelsius.Connect(source); //This essentially says, "Connect Fahrenheit To Celsius Filter input port to the Source Filter output port"
 
 		/****************************************************************************
 		* Here we start the filters up. All-in-all,... its really kind of boring.

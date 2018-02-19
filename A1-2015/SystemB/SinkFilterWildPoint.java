@@ -1,5 +1,5 @@
 /******************************************************************************************************************
-* File:SinkFilter.java
+* File:SinkFilterWildPoint.java
 * Course: 17655
 * Project: Assignment 1
 * Copyright: Copyright (c) 2003 Carnegie Mellon University
@@ -169,7 +169,7 @@ public class SinkFilterWildPoint extends FilterFrameworkWildPoint
 
 				catch (EndOfStreamException e)
 				{
-					
+
 					try {
 						outStream.close();
 						ClosePorts();
@@ -189,7 +189,7 @@ public class SinkFilterWildPoint extends FilterFrameworkWildPoint
 		{
 			System.out.println("\n" + this.getName() + "::Problem writing output data file::" + iox );
 
-		} 
+		}
 
    } // run
 

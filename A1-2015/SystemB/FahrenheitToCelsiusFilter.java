@@ -1,5 +1,5 @@
 /******************************************************************************************************************
-* File:MiddleFilter.java
+* File:FahrenheitToCelsiusFilter.java
 * Course: 17655
 * Project: Assignment 1
 * Copyright: Copyright (c) 2003 Carnegie Mellon University
@@ -8,9 +8,8 @@
 *
 * Description:
 *
-* This class serves as an example for how to use the FilterRemplate to create a standard filter. This particular
-* example is a simple "pass-through" filter that reads data from the filter's input port and writes data out the
-* filter's output port.
+* This class serves as an example for how to use the FilterRemplate to create a data transform filter. This particular
+* filter modifies the data in FlightData.dat to change the tempature data from Fahrenheit to Celsius.
 *
 * Parameters: 		None
 *
@@ -30,7 +29,7 @@ public class FahrenheitToCelsiusFilter extends FilterFramework
 		byte databyte = 0;					// The byte of data read from the file
 
 		long measurement;				// This is the word used to store all measurements - conversions are illustrated.
-		double midvalue;
+		double midvalue;		// This is the word used to sotre all converted measurements.
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
 
@@ -86,7 +85,8 @@ public class FahrenheitToCelsiusFilter extends FilterFramework
 
 					} // if
 
-					midvalue = (Double.longBitsToDouble(measurement) - 32) * 5.0 / 9.0;
+					midvalue = (Double.longBitsToDouble(measurement) - 32) * 5.0 / 9.0; //converting measurement(in Fahrenheit) to midvalue (celsius)
+					midvalue = Math.round (midvalue * 100000.0) / 100000.0;   //formatting double to show only 5 decimal places
 					measurement = Double.doubleToLongBits(midvalue);
 					for(i = 0; i < MeasurementLength; i++) {
 						databyte = (byte) ((measurement >> ((7 - i) * 8)) & 0xff);

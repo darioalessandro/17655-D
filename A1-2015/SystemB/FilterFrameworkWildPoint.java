@@ -1,5 +1,5 @@
 /******************************************************************************************************************
-* File:FilterFramework.java
+* File:FilterFrameworkWildPoint.java
 * Course: 17655
 * Project: Assignment 1
 * Copyright: Copyright (c) 2003 Carnegie Mellon University
@@ -8,10 +8,11 @@
 *
 * Description:
 *
-* This superclass defines a skeletal filter framework that defines a filter in terms of the input and output
-* ports. All filters must be defined in terms of this framework - that is, filters must extend this class
-* in order to be considered valid system filters. Filters as standalone threads until the inputport no longer
-* has any data - at which point the filter finishes up any work it has to do and then terminates.
+* This superclass that extends FilterFramework.java and defines a skeletal wildpoint filter framework
+* that defines a filter in terms of the input and output ports. All filters must be defined in terms
+* of this framework - that is, filters must extend this class in order to be considered valid system
+* filters. Filters as standalone threads until the inputport no longer has any data - at which point
+* the filter finishes up any work it has to do and then terminates.
 *
 * Parameters:
 *
@@ -28,9 +29,7 @@
 * Internal Methods:
 *
 *	public void Connect( FilterFramework Filter )
-*	public byte ReadFilterInputPort()
 *	public void WriteFilterOutputPort(byte datum)
-*	public boolean EndOfInputStream()
 *
 ******************************************************************************************************************/
 
@@ -125,6 +124,20 @@ public class FilterFrameworkWildPoint extends FilterFramework
 	} // WriteFilterPort
 
 
+
+	/***************************************************************************
+	* CONCRETE METHOD:: ClosePorts
+	* Purpose: This method is used to close the input and output ports of the
+	* filter. It is important that filters close their ports before the filter
+	* thread exits.
+	*
+	* Arguments: void
+	*
+	* Returns: void
+	*
+	* Exceptions: IOExecption
+	*
+	****************************************************************************/
 	void ClosePorts()
 	{
 		try

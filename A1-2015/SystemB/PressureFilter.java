@@ -1,5 +1,5 @@
 /******************************************************************************************************************
-* File:MiddleFilter.java
+* File:Pressure.java
 * Course: 17655
 * Project: Assignment 1
 * Copyright: Copyright (c) 2003 Carnegie Mellon University
@@ -38,8 +38,8 @@ public class PressureFilter extends FilterFrameworkWildPoint
 		int bytesread = 0;				// Number of bytes read from the input file.
 		int byteswritten = 0;			// Number of bytes written to the stream.
 		byte databyte = 0;				// The byte of data read from the file
-		double midvalue;
-		boolean wildpoint = false;
+		double midvalue;					// This is the word used to store all converted measurements.
+
 		byte[] datastreams = new byte[100];
 	    int streamindex = 0;
 
@@ -52,8 +52,10 @@ public class PressureFilter extends FilterFrameworkWildPoint
 		Double nextvalue;				// next measurement
 		Double pressurecomp;			// prevvalue - currentvalue
 
-		double midvaluewildpoint = 0.0;
-		long wildpointmeasurement;
+//* A wild point is any pressure data that varies more than 10PSI between samples and/or is negative.
+		boolean wildpoint = false; //This value is set to True if a measurement needs to be sent to WildPoints.dat
+		double midvaluewildpoint = 0.0; // This is the word used to store all converted measurements that are wildPoints
+		long wildpointmeasurement; //This is the word used to store all wildpoint measurmenets.
 		byte[] wildpointstreams = new byte[100];
 		int wildpointstreams_length = 0;
 
@@ -133,12 +135,12 @@ public class PressureFilter extends FilterFrameworkWildPoint
                             wildpointstreams_length = streamindex;
 
 							midvalue = prevvalue;
-                    	}
-
-                    	map.put( "prev", prevvalue );           // may be we can remove the map variable ??
+            }
+            map.put( "prev", prevvalue );           // may be we can remove the map variable ??
 					}
 
 					map.put( "current", midvalue );
+					midvalue = Math.round (midvalue * 100000.0) / 100000.0;   //formatting double to show only 5 decimal places
 
 					measurement = Double.doubleToLongBits(midvalue);
 					for(i = 0; i < MeasurementLength; i++) {
@@ -150,6 +152,7 @@ public class PressureFilter extends FilterFrameworkWildPoint
 
 					if(wildpoint)
 					{
+						midvaluewildpoint = Math.round (midvaluewildpoint * 100000.0) / 100000.0;   //formatting double to show only 5 decimal places
 						wildpointmeasurement = Double.doubleToLongBits(midvaluewildpoint);
 						//wildpointstreams_length = streamindex;
 					    for(i = 0; i < MeasurementLength; i++) {
@@ -157,7 +160,7 @@ public class PressureFilter extends FilterFrameworkWildPoint
 							wildpointstreams[wildpointstreams_length++] = databyte;
 						}
 					}
-				} 
+				}
 				else
 				{
 					databyte = ReadFilterInputPort();

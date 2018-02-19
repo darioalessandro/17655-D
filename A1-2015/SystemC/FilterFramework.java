@@ -40,15 +40,15 @@ public class FilterFramework extends Thread
 {
 	// Define filter input and output ports
 
-	private PipedInputStream InputReadPort = new PipedInputStream();
-	private PipedOutputStream OutputWritePort = new PipedOutputStream();
+	protected PipedInputStream InputReadPort = new PipedInputStream();
+	protected PipedOutputStream OutputWritePort = new PipedOutputStream();
 
 	// The following reference to a filter is used because java pipes are able to reliably
 	// detect broken pipes on the input port of the filter. This variable will point to
 	// the previous filter in the network and when it dies, we know that it has closed its
 	// output pipe and will send no more data.
 
-	private FilterFramework InputFilter;
+	protected FilterFramework InputFilter;
 
 	/***************************************************************************
 	* InnerClass:: EndOfStreamExeception
@@ -121,7 +121,7 @@ public class FilterFramework extends Thread
 	*
 	****************************************************************************/
 
-	byte ReadFilterInputPort() throws EndOfStreamException
+	byte ReadFilterInputPort(PipedInputStream pipedInputStream) throws EndOfStreamException
 	{
 		byte datum = 0;
 
@@ -143,7 +143,7 @@ public class FilterFramework extends Thread
 
 		try
 		{
-			while (InputReadPort.available()==0 )
+			while (pipedInputStream.available()==0 )
 			{
 				if (EndOfInputStream())
 				{
@@ -176,7 +176,7 @@ public class FilterFramework extends Thread
 
 		try
 		{
-			datum = (byte)InputReadPort.read();
+			datum = (byte)pipedInputStream.read();
 			return datum;
 
 		} // try
@@ -204,12 +204,12 @@ public class FilterFramework extends Thread
 	*
 	****************************************************************************/
 
-	void WriteFilterOutputPort(byte datum)
+	void WriteFilterOutputPort(PipedOutputStream pipedOutputStream, byte datum)
 	{
 		try
 		{
-            OutputWritePort.write((int) datum );
-		   	OutputWritePort.flush();
+		    pipedOutputStream.write((int) datum );
+		    pipedOutputStream.flush();
 
 		} // try
 

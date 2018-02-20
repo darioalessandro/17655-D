@@ -74,7 +74,13 @@ public class FilterFramework extends Thread
 
 	} // Connect
 
-	Measurement ReadMeasurement() throws EndOfStreamException {
+	/**
+	 * Used to read a frame from objectInputPort.
+	 * @return Frame
+	 * @throws EndOfStreamException
+	 */
+
+	Frame ReadFrame() throws EndOfStreamException {
 
 		try {
 			while (InputReadPort.available()==0 ) {
@@ -97,7 +103,7 @@ public class FilterFramework extends Thread
 		 ***********************************************************************/
 		try {
 			ObjectInputStream objectInputPort = new ObjectInputStream(InputReadPort);
-			Measurement datum = (Measurement)objectInputPort.readObject();
+			Frame datum = (Frame)objectInputPort.readObject();
 			return datum;
 		}
 		catch( Exception Error ) {

@@ -7,9 +7,17 @@ Due Feb 22nd.
 #### INSTRUCTIONS TO RUN a System
 
 ```bash
-cd A1-2015/SystemA
-javac *.java
-java Plumber
+cd A1-2015/<System Name>
+javac -cp ../Library/ Plumber.java
+java -cp ../Library/:. Plumber
+```  
+
+#### Instructions to RUN tests
+
+```bash
+cd A1-2015/LibraryTests
+javac -cp ../Library/ *.java
+java -cp ../Library/:. TransformFrameFilterTests
 ```  
 
 ### System A

@@ -1,16 +1,16 @@
 import java.io.*;
 import java.util.*;						// This class is used to interpret time words
 
-public class SinkMeasurementPrinter extends FilterFramework {
+public class FramePrinterSink extends FilterFramework {
 	final String filePath;
 	final String header;
-	final SinkMeasurementMeasurementToStringCallback sinkMeasurementMeasurementToStringCallback;
-	SinkMeasurementPrinter(String filePath,
+	final FrameToStringCallback frameToStringCallback;
+	FramePrinterSink(String filePath,
 						   String header,
-						   SinkMeasurementMeasurementToStringCallback transform) {
+						   FrameToStringCallback frameToStringCallback) {
 		this.filePath = filePath;
 		this.header = header;
-		this.sinkMeasurementMeasurementToStringCallback = transform;
+		this.frameToStringCallback = frameToStringCallback;
 	}
 
 	public void run() {
@@ -21,8 +21,8 @@ public class SinkMeasurementPrinter extends FilterFramework {
 			outStream.writeUTF(this.header);
 			while (true) {
 				try {
-					Measurement m = ReadMeasurement();
-					String textToWrite = this.sinkMeasurementMeasurementToStringCallback.transform(m);
+					Frame m = ReadFrame();
+					String textToWrite = this.frameToStringCallback.transform(m);
 					System.out.println(textToWrite);
 					outStream.writeUTF(textToWrite);
 				} catch (EndOfStreamException e) {

@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;                        // This class is used to interpret time words
 import java.text.SimpleDateFormat;        // This class is used to format and write time in a string format.
 
-public class BytesToMeasurementsTransformer extends FilterFramework {
+public class BytesToFrameFilter extends FilterFramework {
     int MeasurementLength = 8;        // This is the length of all measurements (including time) in bytes
     int IdLength = 4;                // This is the length of IDs in the byte stream
 
@@ -26,8 +26,8 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
          *	First we announce to the world that we are alive...
          **************************************************************/
 
-        System.out.print("\n" + this.getName() + "::BytesToMeasurementsTransformer ");
-        Measurement m = new Measurement();
+        System.out.print("\n" + this.getName() + "::BytesToFrameFilter ");
+        Frame frame = new Frame();
         while (true) {
             try {
                 /***************************************************************************
@@ -83,36 +83,36 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
                  ****************************************************************************/
 
                 if (id == 0) {
+                    if (frame.timestamp != null) {
+                        try {
+                            ObjectOutputStream OutputWritePorto = new ObjectOutputStream(this.OutputWritePort);
+                            OutputWritePorto.writeObject(frame);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                     TimeStamp.setTimeInMillis(measurement);
-                    m.timestamp = TimeStamp.getTime();
+                    frame.timestamp = TimeStamp.getTime();
                 } else {
                     double value = Double.longBitsToDouble(measurement);
                     switch (id) {
                         case 1:
-                            m.velocity = value;
+                            frame.velocity = value;
                             break;
                         case 2:
-                            m.altitude = value;
+                            frame.altitude = value;
                             break;
                         case 3:
-                            m.pressure = value;
+                            frame.pressure = value;
                             break;
                         case 4:
-                            m.temperature = value;
+                            frame.temperature = value;
                             break;
                         case 5:
-                            m.attitude = value;
+                            frame.attitude = value;
                             break;
                         default:
                             System.out.println("unknown id: " + id);
-                    }
-                }
-                if (id == 5) {
-                    try {
-                        ObjectOutputStream OutputWritePorto = new ObjectOutputStream(this.OutputWritePort);
-                        OutputWritePorto.writeObject(m);
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -122,6 +122,15 @@ public class BytesToMeasurementsTransformer extends FilterFramework {
              *	written letting the user know what is going on.
              ********************************************************************************/
             catch (EndOfStreamException e) {
+                if (frame.timestamp != null) {
+                    try {
+                        ObjectOutputStream OutputWritePorto = new ObjectOutputStream(this.OutputWritePort);
+                        OutputWritePorto.writeObject(frame);
+                    }
+                    catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
+                }
                 ClosePorts();
                 System.out.print("\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread);
                 break;

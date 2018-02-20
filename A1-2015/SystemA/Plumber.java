@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.util.Optional;
 
 public class Plumber {
     public static void main(String argv[]) {
@@ -16,21 +17,25 @@ public class Plumber {
          ****************************************************************************/
 
         SourceFileReader fileReaderSource = new SourceFileReader("../DataSets/FlightData.dat");
-        BytesToMeasurementsTransformer bytesToMeasurements = new BytesToMeasurementsTransformer();
-        SinkMeasurementPrinter sink = new SinkMeasurementPrinter(
+        BytesToFrameFilter bytesToFrame = new BytesToFrameFilter();
+        FramePrinterSink sink = new FramePrinterSink(
             "OutputA.dat",
             "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "\n",
-            (m) -> {
-            return timeStampFormatter.format(m.timestamp) + "\t" +
-                    temperatureFormatter.format(m.temperature) + "\t" +
-                    altitudeFormatter.format(m.altitude) + "\n";
+            (frame) -> {
+            return (frame.timestamp != null ? timeStampFormatter.format(frame.timestamp) : "<null>") + "\t" +
+                    (frame.temperature != null ? temperatureFormatter.format(frame.temperature) : "<null>") + "\t" +
+                    (frame.altitude != null ? altitudeFormatter.format(frame.altitude) : "<null>")  + "\n";
         });
 
-        TransformMeasurementFilter transformTemperatureAndConvertAltitude = new TransformMeasurementFilter((m) -> {
-            m.temperature = (m.temperature - 32) * 5 / 9; // F -> C
-            m.altitude = m.altitude * 0.3048; // Feet to meters.
-            return m;
-        });
+        TransformFrameFilter transformTemperatureAndConvertAltitude = new TransformFrameFilter((frame, lastNSamples) -> {
+            if (frame.temperature != null) {
+                frame.temperature = (frame.temperature - 32) * 5 / 9; // F -> C
+            }
+            if (frame.altitude != null) {
+                frame.altitude = frame.altitude * 0.3048; // Feet to meters.
+            }
+            return Optional.ofNullable(frame);
+        }, 3);
 
         /****************************************************************************
          * Here we connect the filters starting with the sink filter (sink) which
@@ -39,15 +44,15 @@ public class Plumber {
          ****************************************************************************/
 
         sink.Connect(transformTemperatureAndConvertAltitude);
-        transformTemperatureAndConvertAltitude.Connect(bytesToMeasurements);
-        bytesToMeasurements.Connect(fileReaderSource);
+        transformTemperatureAndConvertAltitude.Connect(bytesToFrame);
+        bytesToFrame.Connect(fileReaderSource);
 
         /****************************************************************************
          * Here we start the filters up. All-in-all,... its really kind of boring.
          ****************************************************************************/
 
         fileReaderSource.start();
-        bytesToMeasurements.start();
+        bytesToFrame.start();
         sink.start();
         transformTemperatureAndConvertAltitude.start();
     }

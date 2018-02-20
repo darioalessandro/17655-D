@@ -156,31 +156,31 @@ public class SinkFilter extends FilterFrameworkWildPoint
 					// in.
 					****************************************************************************/
 
-					if (id == 4) {
-						temp = Double.longBitsToDouble(measurement);
-
-					} // if
-
-					if (id == 2) {
+					if (id == 2)
+					{
 						alt = Double.longBitsToDouble(measurement);
+					} // if id == 2
 
-					} // if
-
-					if (id == 3) {
+					if (id == 3)
+					{
 						pressure = Double.longBitsToDouble(measurement);
+					} // if id == 3
 
-					} // if
-
-					System.out.print(TimeStampFormat.format(TimeStamp.getTime()) + "\t" +
+					if (id == 4)
+					{
+						temp = Double.longBitsToDouble(measurement);
+            
+						System.out.print(TimeStampFormat.format(TimeStamp.getTime()) + "\t" +
 							temperatureFormatter.format(temp) + "\t" +
 							altitudeFormatter.format(alt) + "\t" +
 							pressureFormatter.format(pressure));
-					System.out.print("\n");
+					  System.out.print("\n");
 
-					outStream.writeUTF(TimeStampFormat.format(TimeStamp.getTime()) + "\t" +
+						outStream.writeUTF(TimeStampFormat.format(TimeStamp.getTime()) + "\t" +
 							temperatureFormatter.format(temp) + "\t" +
 							altitudeFormatter.format(alt) + "\t" +
 							pressureFormatter.format(pressure) + "\n");
+					} // if id == 4
 
 				} // try
 

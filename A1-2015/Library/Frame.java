@@ -13,15 +13,13 @@ class Frame implements Serializable {
 
     static final long serialVersionUID = -5399605122490343339L;
 
-    public Frame() {
+    public Frame() { }
 
-    }
-
-    public Frame(Date timestamp, Double velocity, Double altitude, Double pressure, Double temperature, Double attitude) {
+    public Frame(Date timestamp, Double velocity, Double altitude, Double originalPressure, Double temperature, Double attitude) {
         this.timestamp = timestamp;
         this.velocity = velocity;
         this.altitude = altitude;
-        this.pressure = pressure;
+        this.originalPressure = originalPressure;
         this.temperature = temperature;
         this.attitude = attitude;
     }
@@ -32,7 +30,8 @@ class Frame implements Serializable {
                 "timestamp=" + (timestamp != null ? timestamp.getTime() : "<null>") +
                 ", velocity=" + (velocity != null ? velocity : "<null>") +
                 ", altitude=" + (altitude != null ? altitude : "<null>") +
-                ", pressure=" + (pressure != null ? pressure : "<null>") +
+                ", originalPressure=" + (originalPressure != null ? originalPressure : "<null>") +
+                ", modifiedPressure=" + (modifiedPressure != null ? modifiedPressure : "<null>") +
                 ", temperature=" + (temperature != null ? temperature : "<null>") +
                 ", attitude=" + (attitude != null ? attitude : "<null>") +
                 '}';
@@ -40,9 +39,10 @@ class Frame implements Serializable {
     public Date timestamp = null;
     public Double velocity = null;
     public Double altitude = null;
-    public Double pressure = null;
+    public Double originalPressure = null;
     public Double temperature = null;
     public Double attitude = null;
+    public Double modifiedPressure = null;
 
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -53,7 +53,8 @@ class Frame implements Serializable {
         if (timestamp != null ? !timestamp.equals(frame.timestamp) : frame.timestamp != null) return false;
         if (velocity != null ? Math.abs(velocity - frame.velocity) > 0.01 : frame.velocity != null) return false;
         if (altitude != null ? Math.abs(altitude - frame.altitude) > 0.01 : frame.altitude != null) return false;
-        if (pressure != null ? Math.abs(pressure - frame.pressure) > 0.01 : frame.pressure != null) return false;
+        if (originalPressure != null ? Math.abs(originalPressure - frame.originalPressure) > 0.01 : frame.originalPressure != null) return false;
+        if (modifiedPressure != null ? Math.abs(modifiedPressure - frame.modifiedPressure) > 0.01 : frame.modifiedPressure != null) return false;
         if (temperature != null ? Math.abs(temperature - frame.temperature) > 0.01 : frame.temperature != null) return false;
         if (attitude != null ? Math.abs(attitude - frame.attitude) > 0.01 : frame.attitude != null) return false;
         return true;

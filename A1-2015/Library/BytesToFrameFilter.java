@@ -103,7 +103,7 @@ public class BytesToFrameFilter extends FilterFramework {
                             frame.altitude = value;
                             break;
                         case 3:
-                            frame.pressure = value;
+                            frame.originalPressure = value;
                             break;
                         case 4:
                             frame.temperature = value;

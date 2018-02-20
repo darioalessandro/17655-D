@@ -4,8 +4,8 @@ public class FilterFramework extends Thread
 {
 	// Define filter input and output ports
 
-	PipedInputStream InputReadPort = new PipedInputStream();
-	PipedOutputStream OutputWritePort = new PipedOutputStream();
+	protected PipedInputStream InputReadPort = new PipedInputStream();
+	protected PipedOutputStream OutputWritePort = new PipedOutputStream();
 
 	// The following reference to a filter is used because java pipes are able to reliably
 	// detect broken pipes on the input port of the filter. This variable will point to

@@ -2,6 +2,16 @@ import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.util.Optional;
 
+/**
+ * Pipe-and-filter network that will read the data stream in FlightData.dat file, convert the
+ * temperature measurements from Fahrenheit to Celsius, and convert altitude from feet to meters.
+ * Filter out all other measurements (no need to save these). Write the output to a text file called
+ * OutputA.dat. Format the output as follows:
+ *
+ * Time: Temperature (C): Altitude (m):
+ * YYYY:DD:HH:MM:SS TTT.ttttt AAAAAA.aaaaa
+ */
+
 public class Plumber {
     public static void main(String argv[]) {
 
@@ -22,9 +32,9 @@ public class Plumber {
             "OutputA.dat",
             "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "\n",
             (frame) -> {
-            return (frame.timestamp != null ? timeStampFormatter.format(frame.timestamp) : "<null>") + "\t" +
+            return Optional.of((frame.timestamp != null ? timeStampFormatter.format(frame.timestamp) : "<null>") + "\t" +
                     (frame.temperature != null ? temperatureFormatter.format(frame.temperature) : "<null>") + "\t" +
-                    (frame.altitude != null ? altitudeFormatter.format(frame.altitude) : "<null>")  + "\n";
+                    (frame.altitude != null ? altitudeFormatter.format(frame.altitude) : "<null>")  + "\n");
         });
 
         TransformFrameFilter transformTemperatureAndConvertAltitude = new TransformFrameFilter((frame, lastNSamples) -> {
@@ -48,7 +58,7 @@ public class Plumber {
         bytesToFrame.Connect(fileReaderSource);
 
         /****************************************************************************
-         * Here we start the filters up. All-in-all,... its really kind of boring.
+         * Here we start the filters up.
          ****************************************************************************/
 
         fileReaderSource.start();

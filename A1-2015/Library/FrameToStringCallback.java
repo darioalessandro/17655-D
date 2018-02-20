@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 public interface FrameToStringCallback {
-    String transform(Frame frame);
+    Optional<String> transform(Frame frame);
 }

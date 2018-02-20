@@ -22,9 +22,15 @@ public class FramePrinterSink extends FilterFramework {
 			while (true) {
 				try {
 					Frame m = ReadFrame();
-					String textToWrite = this.frameToStringCallback.transform(m);
-					System.out.println(textToWrite);
-					outStream.writeUTF(textToWrite);
+					this.frameToStringCallback.transform(m).ifPresent((textToWrite) -> {
+						try {
+							System.out.println(textToWrite);
+							outStream.writeUTF(textToWrite);
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+					});
 				} catch (EndOfStreamException e) {
 					outStream.close();
 					ClosePorts();

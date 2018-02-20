@@ -34,8 +34,8 @@ public class TransformFrameFilter extends FilterFramework {
 		System.out.print( "\n" + this.getName() + "::TransformFrameFilter ");
 		while (true) {
 			try {
-				transformFrameCallback.transform(ReadFrame(),
-						Collections.unmodifiableList(lastNFrames)).ifPresent(transfomedFrame -> {
+				transformFrameCallback.transform(ReadFrame(), Collections.unmodifiableList(lastNFrames))
+						.ifPresent(transfomedFrame -> {
 				    try {
 						lastNFrames.addFirst(transfomedFrame);
 						if (lastNFrames.size() > maxNumberOfSamplesToSendToTheCallback) {
@@ -53,7 +53,7 @@ public class TransformFrameFilter extends FilterFramework {
 			}
 			catch (EndOfStreamException e) {
 				try {
-					lastNFrames.removeLast();
+					lastNFrames.removeLast(); // This point has been sent already, that is why we remove it.
 					while(!lastNFrames.isEmpty()) {
 						Frame frame = lastNFrames.removeLast();
 						ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);

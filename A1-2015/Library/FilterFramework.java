@@ -80,37 +80,37 @@ public class FilterFramework extends Thread
 	 * @throws EndOfStreamException
 	 */
 
-	Frame ReadFrame() throws EndOfStreamException {
-
-		try {
-			while (InputReadPort.available()==0 ) {
-				if (EndOfInputStream()) {
-					throw new EndOfStreamException("End of input stream reached");
-				}
-				sleep(250);
-			}
-		}
-		catch( EndOfStreamException Error ) {
-			throw Error;
-		}
-		catch( Exception Error ) {
-			System.out.println( "\n" + this.getName() + " Error in read port wait loop::" + Error );
-		}
-
-		/***********************************************************************
-		 * If at least one byte of data is available on the input
-		 * pipe we can read it. We read and write one byte to and from ports.
-		 ***********************************************************************/
-		try {
-			ObjectInputStream objectInputPort = new ObjectInputStream(InputReadPort);
-			Frame datum = (Frame)objectInputPort.readObject();
-			return datum;
-		}
-		catch( Exception Error ) {
-			System.out.println( "\n" + this.getName() + " Pipe read error::" + Error );
-			return null;
-		}
-	}
+//	Frame ReadFrame() throws EndOfStreamException {
+//
+//		try {
+//			while (InputReadPort.available()==0 ) {
+//				if (EndOfInputStream()) {
+//					throw new EndOfStreamException("End of input stream reached");
+//				}
+//				sleep(250);
+//			}
+//		}
+//		catch( EndOfStreamException Error ) {
+//			throw Error;
+//		}
+//		catch( Exception Error ) {
+//			System.out.println( "\n" + this.getName() + " Error in read port wait loop::" + Error );
+//		}
+//
+//		/***********************************************************************
+//		 * If at least one byte of data is available on the input
+//		 * pipe we can read it. We read and write one byte to and from ports.
+//		 ***********************************************************************/
+//		try {
+//			ObjectInputStream objectInputPort = new ObjectInputStream(InputReadPort);
+//			Frame datum = (Frame)objectInputPort.readObject();
+//			return datum;
+//		}
+//		catch( Exception Error ) {
+//			System.out.println( "\n" + this.getName() + " Pipe read error::" + Error );
+//			return null;
+//		}
+//	}
 
 	/***************************************************************************
 	* CONCRETE METHOD:: ReadFilterInputPort

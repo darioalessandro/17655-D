@@ -27,7 +27,7 @@ import java.util.LinkedList;
  * The current implementation guarantees that current will never be null.
  */
 
-public class FrameSmoothFilter extends FilterFramework {
+public class FrameSmoothFilter extends FrameFilterFramework {
 
 	final private FrameSmoothFilterCallback frameSmoothFilterCallback;
 
@@ -43,21 +43,25 @@ public class FrameSmoothFilter extends FilterFramework {
 		Frame previous = null;
 		while (true) {
 			try {
-				next = ReadFrame();
+				next = readFrame(this.InputReadPort);
 				if(current == null && previous == null) {
 					current = next;
 					continue;
 				}
-				Frame transformedCurrent = frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous);
-				try {
-					ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
-					output.writeObject(transformedCurrent);
-					previous = transformedCurrent;
-					current = next;
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
+				//Frame transformedCurrent = frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous);
+				frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous).ifPresent(frame -> {
+				    previous = frame;
+            current = next;
+		        try {
+		            ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
+		            output.writeObject(frame);
+		            
+		          }
+		          catch (IOException e) {
+		            e.printStackTrace();
+		          }
+				}); 
+
 			}
 			catch (EndOfStreamException e) {
 				ClosePorts();

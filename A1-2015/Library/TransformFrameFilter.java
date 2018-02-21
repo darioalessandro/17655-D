@@ -18,7 +18,7 @@ import java.util.LinkedList;
  lastNSamples is an immutable list with the last N accepted frames,
  */
 
-public class TransformFrameFilter extends FilterFramework {
+public class TransformFrameFilter extends FrameFilterFramework {
 
 	final private TransformFrameCallback transformFrameCallback;
 	final private int maxNumberOfSamplesToSendToTheCallback;
@@ -34,7 +34,7 @@ public class TransformFrameFilter extends FilterFramework {
 		System.out.print( "\n" + this.getName() + "::TransformFrameFilter ");
 		while (true) {
 			try {
-				transformFrameCallback.transform(ReadFrame(), Collections.unmodifiableList(lastNFrames))
+				transformFrameCallback.transform(readFrame(this.InputReadPort), Collections.unmodifiableList(lastNFrames))
 						.ifPresent(transfomedFrame -> {
 				    try {
 						lastNFrames.addFirst(transfomedFrame);

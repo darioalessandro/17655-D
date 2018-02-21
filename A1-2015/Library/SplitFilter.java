@@ -52,15 +52,4 @@ public class SplitFilter extends FrameFilterFramework {
             }
         }
     }
-
-    /*void writeFrame(Frame frame, PipedOutputStream output) {
-        try {
-            ObjectOutputStream output2 = new ObjectOutputStream(output);
-            output2.writeObject(frame);
-        }
-        catch( Exception Error ) {
-            System.out.println("\n" + this.getName() + " Pipe write error::" + Error );
-        }
-        return;
-    }*/
 }

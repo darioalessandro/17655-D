@@ -27,7 +27,11 @@ import java.util.LinkedList;
  * The current implementation guarantees that current will never be null.
  */
 
-public class FrameSmoothFilter extends FilterFramework {
+public class FrameSmoothFilter extends FrameFilterFramework {
+
+	Frame next = null;
+	Frame current= null;
+	Frame previous = null;
 
 	final private FrameSmoothFilterCallback frameSmoothFilterCallback;
 
@@ -35,29 +39,36 @@ public class FrameSmoothFilter extends FilterFramework {
 		this.frameSmoothFilterCallback = frameSmoothFilterCallback;
 	}
 
+	void updatePreviousAndCurrentValues(Frame previous, Frame current) {
+		this.previous = previous;
+		this.current = current;
+	}
+
+
 	public void run() {
 		byte databyte;
 		System.out.print( "\n" + this.getName() + "::TransformFrameFilter ");
-		Frame next = null;
-		Frame current= null;
-		Frame previous = null;
+
 		while (true) {
 			try {
-				next = ReadFrame();
+				next = readFrame(this.InputReadPort);
 				if(current == null && previous == null) {
 					current = next;
 					continue;
 				}
-				Frame transformedCurrent = frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous);
-				try {
-					ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
-					output.writeObject(transformedCurrent);
-					previous = transformedCurrent;
-					current = next;
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
+
+				frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous).ifPresent(frame -> {
+					updatePreviousAndCurrentValues(frame, next);
+		        try {
+		            ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
+		            output.writeObject(frame);
+		            
+		          }
+		          catch (IOException e) {
+		            e.printStackTrace();
+		          }
+				}); 
+
 			}
 			catch (EndOfStreamException e) {
 				ClosePorts();

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 /**
  * Pipe-and-filter network that does what System A does but includes pressure data in the
- * output. In addition, System B should filter “wild points” out of the data stream for pressure
+ * output. In addition, System B should filter "wild points" out of the data stream for pressure
  * measurements. A wild point is any pressure data that varies more than 10PSI between samples
  * and/or is negative. For wild points encountered in the stream, extrapolate a replacement value by
  * using the last known valid measurement and the next valid measurement in the stream.
@@ -27,16 +27,73 @@ import java.util.Optional;
  *
  */
 
-public class Plumber {
+public class SystemB {
     public static void main(String argv[]) {
 
         SimpleDateFormat timeStampFormatter = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
         DecimalFormat temperatureFormatter = new DecimalFormat("000.00000");
         DecimalFormat altitudeFormatter = new DecimalFormat("00000.00000");
 
+        // input file
         SourceFileReader fileReaderSource = new SourceFileReader("../DataSets/FlightData.dat");
         BytesToFrameFilter bytesToFrame = new BytesToFrameFilter();
+        
+        // transform the temperatures and filter frames without temperature and altitude attributes
+        TransformFrameFilter transformTemperatureAndConvertAltitude =
+                new TransformFrameFilter((frame, lastNSamples) -> {
+            if (frame.temperature != null) {
+                frame.temperature = (frame.temperature - 32) * 5 / 9; // F -> C
+            }
+            if (frame.altitude != null) {
+                frame.altitude = frame.altitude * 0.3048; // Feet to meters.
+            }
+            return Optional.ofNullable(frame);
+        }, 3);
+        
+        // split the stream to log "wild points"
         SplitFilter splitFilter = new SplitFilter();
+        
+
+        // wild points logging branch ---------
+        
+        // filter out non-wild points
+        FrameSmoothFilter filterNormalPoints = new FrameSmoothFilter((next, current, previous) -> {
+            if (next == null || previous == null) {
+                return Optional.empty();
+            }
+            if (Math.abs(next.originalPressure - current.originalPressure) > 10
+                    && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
+                return Optional.ofNullable(current);
+            }
+            return Optional.empty();
+        });
+        
+        
+        FramePrinterSink wildPointsSink = new FramePrinterSink(
+            "Wildpoints.dat",
+            "Time:\t\t\t" + "Pressure (psi):\t" + "\n",
+            (frame) -> {
+            return Optional.of(timeStampFormatter.format(frame.timestamp) + "\t" +
+                    altitudeFormatter.format(frame.originalPressure) + "\n");
+            });
+
+        // wild points normalizing branch -------------
+
+        // TODO: handle scenario where the first frame and last frames have a wild point.
+        FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
+            if (next == null) {
+                return Optional.empty();
+            }
+            if (previous == null) {
+                return Optional.of(current);
+            }
+            if (Math.abs(next.originalPressure - current.originalPressure) > 10
+                    && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
+                current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
+            }
+            return Optional.of(current);
+        });
+        
         FramePrinterSink sink = new FramePrinterSink(
             "OutputB.dat",
             "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
@@ -54,63 +111,29 @@ public class Plumber {
 
         });
 
-        FramePrinterSink wildPointsSink = new FramePrinterSink(
-            "Wildpoints.dat",
-            "Time:\t\t\t" + "Pressure (psi):\t" + "\n",
-            (frame) -> {
-
-            return frame.modifiedPressure != null ?
-                    Optional.of(timeStampFormatter.format(frame.timestamp) + "\t" +
-                    altitudeFormatter.format(frame.originalPressure) + "\n") : Optional.empty() ;
-
-        });
-
-        TransformFrameFilter transformTemperatureAndConvertAltitude =
-                new TransformFrameFilter((frame, lastNSamples) -> {
-            if (frame.temperature != null) {
-                frame.temperature = (frame.temperature - 32) * 5 / 9; // F -> C
-            }
-            if (frame.altitude != null) {
-                frame.altitude = frame.altitude * 0.3048; // Feet to meters.
-            }
-            return Optional.ofNullable(frame);
-        }, 3);
-
-        // TODO: handle scenario where the first frame and last frames have a wild point.
-        FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
-            if (next == null) {
-                return current;
-            }
-            if (previous == null) {
-                return current;
-            }
-            if (Math.abs(next.originalPressure - current.originalPressure) > 10
-                    && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
-                current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
-            }
-            return current;
-        });
-
         /****************************************************************************
          * Create the pipe and filter network
          ****************************************************************************/
+      
+        sink.Connect(smoothFilter);
+        wildPointsSink.Connect(filterNormalPoints);
+        
+        splitFilter.ConnectOutput(smoothFilter);
+        splitFilter.ConnectOutput(filterNormalPoints);
+        splitFilter.Connect(transformTemperatureAndConvertAltitude);
 
-        splitFilter.ConnectOutput(sink);
-        splitFilter.ConnectOutput(wildPointsSink);
-        splitFilter.Connect(smoothFilter);
-        smoothFilter.Connect(transformTemperatureAndConvertAltitude);
         transformTemperatureAndConvertAltitude.Connect(bytesToFrame);
         bytesToFrame.Connect(fileReaderSource);
 
         /****************************************************************************
          * Here we start the filters up.
          ****************************************************************************/
-
-        bytesToFrame.start();
         fileReaderSource.start();
+        bytesToFrame.start();
         transformTemperatureAndConvertAltitude.start();
-        smoothFilter.start();
         splitFilter.start();
+        filterNormalPoints.start();
+        smoothFilter.start();
         sink.start();
         wildPointsSink.start();
     }

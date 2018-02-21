@@ -8,7 +8,7 @@ import java.io.*;
  *
  */
 
-public class SplitFilter extends FilterFramework {
+public class SplitFilter extends FrameFilterFramework {
     private ArrayList<PipedOutputStream> outputs = new ArrayList<>();
 
     /**
@@ -32,7 +32,7 @@ public class SplitFilter extends FilterFramework {
         System.out.print( "\n" + this.getName() + "::SplitFilter ");
         while (true) {
             try {
-                Frame frame = ReadFrame();
+                Frame frame = readFrame(this.InputReadPort);
                 for (PipedOutputStream output : outputs) {
                     writeFrame(frame, output);
                 }
@@ -51,16 +51,5 @@ public class SplitFilter extends FilterFramework {
                 break;
             }
         }
-    }
-
-    void writeFrame(Frame frame, PipedOutputStream output) {
-        try {
-            ObjectOutputStream output2 = new ObjectOutputStream(output);
-            output2.writeObject(frame);
-        }
-        catch( Exception Error ) {
-            System.out.println("\n" + this.getName() + " Pipe write error::" + Error );
-        }
-        return;
     }
 }

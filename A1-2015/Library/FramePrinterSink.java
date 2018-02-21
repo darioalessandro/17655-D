@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;						// This class is used to interpret time words
 
-public class FramePrinterSink extends FilterFramework {
+public class FramePrinterSink extends FrameFilterFramework {
 	final String filePath;
 	final String header;
 	final FrameToStringCallback frameToStringCallback;
@@ -21,7 +21,7 @@ public class FramePrinterSink extends FilterFramework {
 			outStream.writeUTF(this.header);
 			while (true) {
 				try {
-					Frame m = ReadFrame();
+					Frame m = readFrame(this.InputReadPort);
 					this.frameToStringCallback.transform(m).ifPresent((textToWrite) -> {
 						try {
 							System.out.println(textToWrite);

@@ -40,7 +40,7 @@ public class SystemB {
         
         // transform the temperatures and filter frames without temperature and altitude attributes
         TransformFrameFilter transformTemperatureAndConvertAltitude =
-                new TransformFrameFilter((frame, lastNSamples) -> {
+                new TransformFrameFilter((frame) -> {
             if (frame.temperature != null) {
                 frame.temperature = (frame.temperature - 32) * 5 / 9; // F -> C
             }
@@ -48,26 +48,17 @@ public class SystemB {
                 frame.altitude = frame.altitude * 0.3048; // Feet to meters.
             }
             return Optional.ofNullable(frame);
-        }, 3);
+        });
         
         // split the stream to log "wild points"
         SplitFilter splitFilter = new SplitFilter();
-        
 
         // wild points logging branch ---------
         
         // filter out non-wild points
-        FrameSmoothFilter filterNormalPoints = new FrameSmoothFilter((next, current, previous) -> {
-            if (next == null || previous == null) {
-                return Optional.empty();
-            }
-            if (Math.abs(next.originalPressure - current.originalPressure) > 10
-                    && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
-                return Optional.ofNullable(current);
-            }
-            return Optional.empty();
+        TransformFrameFilter filterNormalPoints = new TransformFrameFilter(frame -> {
+            return (frame.smoothedPressure != null) ? Optional.of(frame) : Optional.empty();
         });
-        
         
         FramePrinterSink wildPointsSink = new FramePrinterSink(
             "Wildpoints.dat",
@@ -81,15 +72,11 @@ public class SystemB {
 
         // TODO: handle scenario where the first frame and last frames have a wild point.
         FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
-            if (next == null) {
-                return Optional.empty();
-            }
-            if (previous == null) {
-                return Optional.of(current);
-            }
+            if (next == null) { return Optional.empty(); }
+            if (previous == null) { return Optional.of(current); }
             if (Math.abs(next.originalPressure - current.originalPressure) > 10
                     && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
-                current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
+                current.smoothedPressure = (next.originalPressure + previous.originalPressure) / 2;
             }
             return Optional.of(current);
         });
@@ -98,30 +85,27 @@ public class SystemB {
             "OutputB.dat",
             "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
             (frame) -> {
-                boolean modifiedPressure = frame.modifiedPressure != null;
-                String asterix = modifiedPressure ? " *": "";
-                String pressure = modifiedPressure ?
-                        altitudeFormatter.format(frame.modifiedPressure) + asterix :
+                boolean smoothedPressure = frame.smoothedPressure != null;
+                String asterix = smoothedPressure ? " *": "";
+                String pressure = smoothedPressure ?
+                        altitudeFormatter.format(frame.smoothedPressure) + asterix :
                         altitudeFormatter.format(frame.originalPressure);
 
             return Optional.of((frame.timestamp != null ? timeStampFormatter.format(frame.timestamp) : "<null>") + "\t" +
                     (frame.temperature != null ? temperatureFormatter.format(frame.temperature) : "<null>") + "\t" +
                     (frame.altitude != null ? altitudeFormatter.format(frame.altitude) : "<null>") + "\t" +
                     pressure + "\n");
-
         });
 
         /****************************************************************************
          * Create the pipe and filter network
          ****************************************************************************/
-      
-        sink.Connect(smoothFilter);
-        wildPointsSink.Connect(filterNormalPoints);
-        
-        splitFilter.ConnectOutput(smoothFilter);
-        splitFilter.ConnectOutput(filterNormalPoints);
-        splitFilter.Connect(transformTemperatureAndConvertAltitude);
 
+        wildPointsSink.Connect(filterNormalPoints);
+        splitFilter.ConnectOutput(sink);
+        splitFilter.ConnectOutput(filterNormalPoints);
+        splitFilter.Connect(smoothFilter);
+        smoothFilter.Connect(transformTemperatureAndConvertAltitude);
         transformTemperatureAndConvertAltitude.Connect(bytesToFrame);
         bytesToFrame.Connect(fileReaderSource);
 
@@ -131,9 +115,9 @@ public class SystemB {
         fileReaderSource.start();
         bytesToFrame.start();
         transformTemperatureAndConvertAltitude.start();
+        smoothFilter.start();
         splitFilter.start();
         filterNormalPoints.start();
-        smoothFilter.start();
         sink.start();
         wildPointsSink.start();
     }

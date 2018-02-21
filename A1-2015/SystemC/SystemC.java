@@ -24,16 +24,14 @@ public class SystemC {
      
      // low altitude branch
      TransformFrameFilter filterHighAltitude =
-         new TransformFrameFilter((frame, lastNSamples) -> {
-             return frame.altitude >= 10000 ? Optional.empty() : Optional.of(frame);
-            },3);
+         new TransformFrameFilter(frame -> frame.altitude >= 10000 ? Optional.empty() : Optional.of(frame));
 
      FramePrinterSink lowAltitudeSink = new FramePrinterSink(
          "LessThan10K.dat",
          "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
          (frame) -> {
-             String pressure = frame.modifiedPressure != null ?
-                 altitudeFormatter.format(frame.modifiedPressure) + " *" :
+             String pressure = frame.smoothedPressure != null ?
+                 altitudeFormatter.format(frame.smoothedPressure) + " *" :
                  altitudeFormatter.format(frame.originalPressure);
              
           return Optional.of((frame.timestamp != null ? timeStampFormatter.format(frame.timestamp) : "<null>") + "\t" +
@@ -45,9 +43,7 @@ public class SystemC {
      // main branch
      
      TransformFrameFilter filterLowAltitude =
-         new TransformFrameFilter((frame, lastNSamples) -> {
-             return frame.altitude < 10000 ? Optional.empty() : Optional.of(frame);
-            },3);
+         new TransformFrameFilter(frame -> frame.altitude < 10000 ? Optional.empty() : Optional.of(frame));
      
      // split the stream to log "wild points"
      SplitFilter splitFilter2 = new SplitFilter();
@@ -88,7 +84,7 @@ public class SystemC {
          }
          if (Math.abs(next.originalPressure - current.originalPressure) > 10
                  && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
-             current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
+             current.smoothedPressure = (next.originalPressure + previous.originalPressure) / 2;
          }
          return Optional.ofNullable(current);
      });
@@ -97,10 +93,10 @@ public class SystemC {
          "OutputB.dat",
          "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
          (frame) -> {
-             boolean modifiedPressure = frame.modifiedPressure != null;
-             String asterix = modifiedPressure ? " *": "";
-             String pressure = modifiedPressure ?
-                     altitudeFormatter.format(frame.modifiedPressure) + asterix :
+             boolean smoothedPressure = frame.smoothedPressure != null;
+             String asterix = smoothedPressure ? " *": "";
+             String pressure = smoothedPressure ?
+                     altitudeFormatter.format(frame.smoothedPressure) + asterix :
                      altitudeFormatter.format(frame.originalPressure);
 
          return Optional.of((frame.timestamp != null ? timeStampFormatter.format(frame.timestamp) : "<null>") + "\t" +

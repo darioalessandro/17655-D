@@ -37,7 +37,7 @@ public class Plumber {
                     (frame.altitude != null ? altitudeFormatter.format(frame.altitude) : "<null>")  + "\n");
         });
 
-        TransformFrameFilter transformTemperatureAndConvertAltitude = new TransformFrameFilter((frame, lastNSamples) -> {
+        TransformFrameFilter transformTemperatureAndConvertAltitude = new TransformFrameFilter((frame) -> {
             if (frame.temperature != null) {
                 frame.temperature = (frame.temperature - 32) * 5 / 9; // F -> C
             }
@@ -45,7 +45,7 @@ public class Plumber {
                 frame.altitude = frame.altitude * 0.3048; // Feet to meters.
             }
             return Optional.ofNullable(frame);
-        }, 3);
+        });
 
         /****************************************************************************
          * Here we connect the filters starting with the sink filter (sink) which

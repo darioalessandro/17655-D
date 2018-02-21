@@ -17,7 +17,7 @@ import java.util.LinkedList;
  	}
  	if (Math.abs(next.originalPressure - current.originalPressure) > 10
  		&& Math.abs(previous.originalPressure - current.originalPressure) > 10) {
- 		current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
+ 		current.smoothedPressure = (next.originalPressure + previous.originalPressure) / 2;
  	}
  	return current;
  });
@@ -28,7 +28,6 @@ import java.util.LinkedList;
  */
 
 public class FrameSmoothFilter extends FrameFilterFramework {
-
 	Frame next = null;
 	Frame current= null;
 	Frame previous = null;
@@ -44,11 +43,9 @@ public class FrameSmoothFilter extends FrameFilterFramework {
 		this.current = current;
 	}
 
-
 	public void run() {
 		byte databyte;
 		System.out.print( "\n" + this.getName() + "::TransformFrameFilter ");
-
 		while (true) {
 			try {
 				next = readFrame(this.InputReadPort);
@@ -56,19 +53,16 @@ public class FrameSmoothFilter extends FrameFilterFramework {
 					current = next;
 					continue;
 				}
-
 				frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous).ifPresent(frame -> {
 					updatePreviousAndCurrentValues(frame, next);
 		        try {
 		            ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
 		            output.writeObject(frame);
-		            
 		          }
 		          catch (IOException e) {
 		            e.printStackTrace();
 		          }
-				}); 
-
+				});
 			}
 			catch (EndOfStreamException e) {
 				ClosePorts();

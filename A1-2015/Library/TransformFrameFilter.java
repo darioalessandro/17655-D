@@ -8,24 +8,19 @@ import java.util.LinkedList;
  *
  * Frames can be filtered out completely by returning Optional.empty() in the transform callback.
  *
- TransformFrameFilter filterOutFramesWithTempHigherThan100 = new TransformFrameFilter((frame, lastNSamples) -> {
+ TransformFrameFilter filterOutFramesWithTempHigherThan100 = new TransformFrameFilter((frame) -> {
  	if (frame.temperature != null && frame.temperature > 100) {
  		return Optional.empty();
  	}
  	return Optional.ofNullable(frame);
- }, 3);
-
- lastNSamples is an immutable list with the last N accepted frames,
+ });
  */
 
 public class TransformFrameFilter extends FrameFilterFramework {
 
 	final private TransformFrameCallback transformFrameCallback;
-	final private int maxNumberOfSamplesToSendToTheCallback;
-	final private LinkedList<Frame> lastNFrames = new LinkedList<>();
 
-	TransformFrameFilter(TransformFrameCallback transformFrameCallback, int maxNumberOfSamplesToSendToTheCallback) {
-		this.maxNumberOfSamplesToSendToTheCallback = maxNumberOfSamplesToSendToTheCallback;
+	TransformFrameFilter(TransformFrameCallback transformFrameCallback) {
 		this.transformFrameCallback = transformFrameCallback;
 	}
 
@@ -34,17 +29,10 @@ public class TransformFrameFilter extends FrameFilterFramework {
 		System.out.print( "\n" + this.getName() + "::TransformFrameFilter ");
 		while (true) {
 			try {
-				transformFrameCallback.transform(readFrame(this.InputReadPort), Collections.unmodifiableList(lastNFrames))
-						.ifPresent(transfomedFrame -> {
+				transformFrameCallback.transform(readFrame(this.InputReadPort)).ifPresent(transfomedFrame -> {
 				    try {
-						lastNFrames.addFirst(transfomedFrame);
-						if (lastNFrames.size() > maxNumberOfSamplesToSendToTheCallback) {
-							lastNFrames.removeLast();
-						}
-						if (lastNFrames.size() == maxNumberOfSamplesToSendToTheCallback) {
-							ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
-							output.writeObject(lastNFrames.getLast());
-						}
+						ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
+						output.writeObject(transfomedFrame);
                     }
                     catch (IOException e) {
                         e.printStackTrace();
@@ -52,17 +40,6 @@ public class TransformFrameFilter extends FrameFilterFramework {
 				});
 			}
 			catch (EndOfStreamException e) {
-				try {
-					lastNFrames.removeLast(); // This point has been sent already, that is why we remove it.
-					while(!lastNFrames.isEmpty()) {
-						Frame frame = lastNFrames.removeLast();
-						ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
-						output.writeObject(frame);
-					}
-				}
-				catch (Exception e2) {
-					e2.printStackTrace();
-				}
 
 				ClosePorts();
 				break;

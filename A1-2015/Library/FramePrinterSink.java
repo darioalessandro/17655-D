@@ -14,18 +14,18 @@ public class FramePrinterSink extends FrameFilterFramework {
 	}
 
 	public void run() {
-		DataOutputStream outStream;
+		OutputStream outStream;
 		try {
 			System.out.print("\n" + this.getName() + "::SinkMeasurementPrinter ");
-			outStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.filePath)));
-			outStream.writeUTF(this.header);
+			outStream = new BufferedOutputStream(new FileOutputStream(this.filePath));
+			outStream.write(this.header.getBytes("UTF-8"));
 			while (true) {
 				try {
 					Frame m = readFrame(this.InputReadPort);
 					this.frameToStringCallback.transform(m).ifPresent((textToWrite) -> {
 						try {
 							System.out.println(textToWrite);
-							outStream.writeUTF(textToWrite);
+							outStream.write(textToWrite.getBytes("UTF-8"));
 						}
 						catch (IOException e) {
 							e.printStackTrace();

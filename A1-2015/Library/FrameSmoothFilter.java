@@ -29,18 +29,26 @@ import java.util.LinkedList;
 
 public class FrameSmoothFilter extends FrameFilterFramework {
 
+	Frame next = null;
+	Frame current= null;
+	Frame previous = null;
+
 	final private FrameSmoothFilterCallback frameSmoothFilterCallback;
 
 	FrameSmoothFilter(FrameSmoothFilterCallback frameSmoothFilterCallback) {
 		this.frameSmoothFilterCallback = frameSmoothFilterCallback;
 	}
 
+	void updatePreviousAndCurrentValues(Frame previous, Frame current) {
+		this.previous = previous;
+		this.current = current;
+	}
+
+
 	public void run() {
 		byte databyte;
 		System.out.print( "\n" + this.getName() + "::TransformFrameFilter ");
-		Frame next = null;
-		Frame current= null;
-		Frame previous = null;
+
 		while (true) {
 			try {
 				next = readFrame(this.InputReadPort);
@@ -48,10 +56,9 @@ public class FrameSmoothFilter extends FrameFilterFramework {
 					current = next;
 					continue;
 				}
-				//Frame transformedCurrent = frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous);
+
 				frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous).ifPresent(frame -> {
-				    previous = frame;
-            current = next;
+					updatePreviousAndCurrentValues(frame, next);
 		        try {
 		            ObjectOutputStream output = new ObjectOutputStream(this.OutputWritePort);
 		            output.writeObject(frame);

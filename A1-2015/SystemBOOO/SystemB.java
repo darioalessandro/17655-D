@@ -4,7 +4,7 @@ import java.util.Optional;
 
 /**
  * Pipe-and-filter network that does what System A does but includes pressure data in the
- * output. In addition, System B should filter â€œwild pointsâ€? out of the data stream for pressure
+ * output. In addition, System B should filter "wild points" out of the data stream for pressure
  * measurements. A wild point is any pressure data that varies more than 10PSI between samples
  * and/or is negative. For wild points encountered in the stream, extrapolate a replacement value by
  * using the last known valid measurement and the next valid measurement in the stream.
@@ -82,16 +82,16 @@ public class SystemB {
         // TODO: handle scenario where the first frame and last frames have a wild point.
         FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
             if (next == null) {
-                return Optional.of(null);//current;
+                return Optional.empty();
             }
             if (previous == null) {
-                return current;
+                return Optional.of(current);
             }
             if (Math.abs(next.originalPressure - current.originalPressure) > 10
                     && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
                 current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
             }
-            return current;
+            return Optional.of(current);
         });
         
         FramePrinterSink sink = new FramePrinterSink(

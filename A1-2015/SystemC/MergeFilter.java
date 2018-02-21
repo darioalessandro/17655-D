@@ -1,7 +1,5 @@
 import java.io.PipedInputStream;
 
-import sun.font.TrueTypeFont;
-
 //import FilterFramework.EndOfStreamException;
 
 

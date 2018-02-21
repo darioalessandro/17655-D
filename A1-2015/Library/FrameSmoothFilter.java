@@ -48,7 +48,6 @@ public class FrameSmoothFilter extends FrameFilterFramework {
 					current = next;
 					continue;
 				}
-				//Frame transformedCurrent = frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous);
 				frameSmoothFilterCallback.smoothCurrentFrame(next, current, previous).ifPresent(frame -> {
 				    previous = frame;
             current = next;

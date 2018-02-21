@@ -2,9 +2,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import sun.invoke.empty.Empty;
-
-public class SystemA {
+public class SystemC {
     public static void main( String argv[])
     {
      /****************************************************************************
@@ -83,16 +81,16 @@ public class SystemA {
      // TODO: handle scenario where the first frame and last frames have a wild point.
      FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
          if (next == null) {
-             return Optional.of(null);//current;
+             return Optional.empty();//current;
          }
          if (previous == null) {
-             return current;
+             return Optional.ofNullable(current);
          }
          if (Math.abs(next.originalPressure - current.originalPressure) > 10
                  && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
              current.modifiedPressure = (next.originalPressure + previous.originalPressure) / 2;
          }
-         return current;
+         return Optional.ofNullable(current);
      });
      
      FramePrinterSink sink = new FramePrinterSink(

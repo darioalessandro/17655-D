@@ -5,17 +5,15 @@ import java.util.Optional;
 public class SystemC {
     public static void main( String argv[])
     {
-     /****************************************************************************
-     * Here we instantiate three filters.
-     ****************************************************************************/
+       // formatters for sink nodes
       SimpleDateFormat timeStampFormatter = new SimpleDateFormat("yyyy MM dd::hh:mm:ss:SSS");
       DecimalFormat temperatureFormatter = new DecimalFormat("000.00000");
       DecimalFormat altitudeFormatter = new DecimalFormat("00000.00000");   
         
-     SourceFileReader subsetASource = new SourceFileReader("../DataSets/SubSetA.dat");
+     SourceFileReader subsetASource = new SourceFileReader("./SubSetA.dat");
      BytesToFrameFilter bytesToFrameFilterA = new BytesToFrameFilter();
      
-     SourceFileReader subsetBSource = new SourceFileReader("../DataSets/SubSetB.dat");
+     SourceFileReader subsetBSource = new SourceFileReader("./SubSetB.dat");
      BytesToFrameFilter bytesToFrameFilterB = new BytesToFrameFilter();
      
      MergeFilter mergeFilter = new MergeFilter();
@@ -47,18 +45,16 @@ public class SystemC {
      
      // split the stream to log "wild points"
      SplitFilter splitFilter2 = new SplitFilter();
-     
 
      // wild points logging branch ---------
      
      // filter out non-wild points
      FrameSmoothFilter filterNormalPoints = new FrameSmoothFilter((next, current, previous) -> {
-         if (next == null || previous == null) {
-             return Optional.empty();
-         }
+         if (next == null) { return Optional.empty(); }
+         if (previous == null) { return Optional.of(current); }
          if (Math.abs(next.originalPressure - current.originalPressure) > 10
                  && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
-             return Optional.ofNullable(current);
+             return Optional.of(current);
          }
          return Optional.empty();
      });
@@ -74,14 +70,10 @@ public class SystemC {
 
      // wild points normalizing branch -------------
 
-     // TODO: handle scenario where the first frame and last frames have a wild point.
+     // correct the wild points
      FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
-         if (next == null) {
-             return Optional.empty();//current;
-         }
-         if (previous == null) {
-             return Optional.ofNullable(current);
-         }
+         if (next == null) { return Optional.empty(); }
+         if (previous == null) { return Optional.of(current); }
          if (Math.abs(next.originalPressure - current.originalPressure) > 10
                  && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
              current.smoothedPressure = (next.originalPressure + previous.originalPressure) / 2;
@@ -89,6 +81,7 @@ public class SystemC {
          return Optional.ofNullable(current);
      });
      
+     // final output sink
      FramePrinterSink sink = new FramePrinterSink(
          "OutputB.dat",
          "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
@@ -103,7 +96,6 @@ public class SystemC {
                  (frame.temperature != null ? temperatureFormatter.format(frame.temperature) : "<null>") + "\t" +
                  (frame.altitude != null ? altitudeFormatter.format(frame.altitude) : "<null>") + "\t" +
                  pressure + "\n");
-
      });
 
      /****************************************************************************
@@ -140,8 +132,6 @@ public class SystemC {
      bytesToFrameFilterA.start();
      bytesToFrameFilterB.start();
      mergeFilter.start();
-     bytesToFrameFilterA.start();
-     bytesToFrameFilterB.start();
      splitFilter.start();
      filterHighAltitude.start();
      lowAltitudeSink.start();

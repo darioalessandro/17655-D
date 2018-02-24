@@ -71,7 +71,7 @@ public class SystemB {
         // wild points normalizing branch -------------
 
         // TODO: handle scenario where the first frame and last frames have a wild point.
-        FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
+        /*FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
             if (next == null) { return Optional.empty(); }
             if (previous == null) { return Optional.of(current); }
             if (Math.abs(next.originalPressure - current.originalPressure) > 10
@@ -79,7 +79,9 @@ public class SystemB {
                 current.smoothedPressure = (next.originalPressure + previous.originalPressure) / 2;
             }
             return Optional.of(current);
-        });
+        });*/
+        
+        BufferedSmoothingFilter bufferedSmoothingFilter = new BufferedSmoothingFilter();
         
         FramePrinterSink sink = new FramePrinterSink(
             "OutputB.dat",
@@ -104,8 +106,10 @@ public class SystemB {
         wildPointsSink.Connect(filterNormalPoints);
         splitFilter.ConnectOutput(sink);
         splitFilter.ConnectOutput(filterNormalPoints);
-        splitFilter.Connect(smoothFilter);
-        smoothFilter.Connect(transformTemperatureAndConvertAltitude);
+        //splitFilter.Connect(smoothFilter);
+        //smoothFilter.Connect(transformTemperatureAndConvertAltitude);
+        splitFilter.Connect(bufferedSmoothingFilter);
+        bufferedSmoothingFilter.Connect(transformTemperatureAndConvertAltitude);
         transformTemperatureAndConvertAltitude.Connect(bytesToFrame);
         bytesToFrame.Connect(fileReaderSource);
 
@@ -115,7 +119,8 @@ public class SystemB {
         fileReaderSource.start();
         bytesToFrame.start();
         transformTemperatureAndConvertAltitude.start();
-        smoothFilter.start();
+        //smoothFilter.start();
+        bufferedSmoothingFilter.start();
         splitFilter.start();
         filterNormalPoints.start();
         sink.start();

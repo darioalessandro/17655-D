@@ -46,8 +46,8 @@ public class SystemB {
             return Optional.of(timeStampFormatter.format(frame.timestamp) + "\t" +
                     altitudeFormatter.format(frame.originalPressure) + "\n");
             });
-
-        // wild points normalizing branch -------------
+        
+        // main branch
         
         // print the corrected stream of frames
         FramePrinterSink sink = new FramePrinterSink(

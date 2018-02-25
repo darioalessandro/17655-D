@@ -64,7 +64,7 @@ public class SystemC {
          (frame) -> {
          return Optional.of(timeStampFormatter.format(frame.timestamp) + "\t" +
                  altitudeFormatter.format(frame.originalPressure) + "\n");
-         });
+     });
 
      // main branch
 

@@ -8,7 +8,7 @@ Due Feb 22nd.
 
 ```bash
 cd A1-2015/<System Name>
-javac -cp ../Library/ Plumber.java
+javac -cp ../Library/:. Plumber.java
 java -cp ../Library/:. Plumber
 ```  
 
@@ -16,7 +16,7 @@ java -cp ../Library/:. Plumber
 
 ```bash
 cd A1-2015/LibraryTests
-javac -cp ../Library/ *.java
+javac -cp ../Library/:. *.java
 java -cp ../Library/:. TransformFrameFilterTests
 ```  
 

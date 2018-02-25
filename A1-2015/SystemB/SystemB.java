@@ -2,31 +2,6 @@ import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.util.Optional;
 
-/**
- * Pipe-and-filter network that does what System A does but includes pressure data in the
- * output. In addition, System B should filter "wild points" out of the data stream for pressure
- * measurements. A wild point is any pressure data that varies more than 10PSI between samples
- * and/or is negative. For wild points encountered in the stream, extrapolate a replacement value by
- * using the last known valid measurement and the next valid measurement in the stream.
- * Extrapolate the replacement value by computing the average of the last valid measurement and
- * the next valid measurement in the stream. If a wild point occurs at the beginning of the stream,
- * replace it with the first valid value; if a wild point occurs at the end of the stream, replace it with
- * the last valid value. Write the output to a text file called OutputB.dat and format the output as
- * shown below – denote any extrapolated values with an asterisk by the value as shown below for
- * the second pressure measurement:
- *
- * Time: Temperature (C): Altitude (m): Pressure (psi):
- * YYYY:DD:HH:MM:SS TTT.ttttt AAAAAA.aaaaa PP:ppppp
- * YYYY:DD:HH:MM:SS TTT.ttttt AAAAAA.aaaaa PP:ppppp*
- * YYYY:DD:HH:MM:SS TTT.ttttt AAAAAA.aaaaa PP:ppppp
- * : : : :
- * Write any rejected wild point values and the time that they occurred to a second text file called
- * WildPoints.dat using a similar format as follows:
- * Time: Pressure (psi):
- * YYYY:DD:HH:MM:SS PP:ppppp
- *
- */
-
 public class SystemB {
     public static void main(String argv[]) {
 
@@ -50,7 +25,10 @@ public class SystemB {
             return Optional.ofNullable(frame);
         });
         
-        // split the stream to log "wild points"
+        // correct the wild points
+        BufferedSmoothingFilter bufferedSmoothingFilter = new BufferedSmoothingFilter();
+        
+        // split the stream to log "wild points" and corrected points separately
         SplitFilter splitFilter = new SplitFilter();
 
         // wild points logging branch ---------
@@ -60,6 +38,7 @@ public class SystemB {
             return (frame.smoothedPressure != null) ? Optional.of(frame) : Optional.empty();
         });
         
+        // print wild points
         FramePrinterSink wildPointsSink = new FramePrinterSink(
             "Wildpoints.dat",
             "Time:\t\t\t" + "Pressure (psi):\t" + "\n",
@@ -67,20 +46,10 @@ public class SystemB {
             return Optional.of(timeStampFormatter.format(frame.timestamp) + "\t" +
                     altitudeFormatter.format(frame.originalPressure) + "\n");
             });
-
-        // wild points normalizing branch -------------
-
-        // TODO: handle scenario where the first frame and last frames have a wild point.
-        FrameSmoothFilter smoothFilter = new FrameSmoothFilter((next, current, previous) -> {
-            if (next == null) { return Optional.empty(); }
-            if (previous == null) { return Optional.of(current); }
-            if (Math.abs(next.originalPressure - current.originalPressure) > 10
-                    && Math.abs(previous.originalPressure - current.originalPressure) > 10) {
-                current.smoothedPressure = (next.originalPressure + previous.originalPressure) / 2;
-            }
-            return Optional.of(current);
-        });
         
+        // main branch
+        
+        // print the corrected stream of frames
         FramePrinterSink sink = new FramePrinterSink(
             "OutputB.dat",
             "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
@@ -104,8 +73,8 @@ public class SystemB {
         wildPointsSink.Connect(filterNormalPoints);
         splitFilter.ConnectOutput(sink);
         splitFilter.ConnectOutput(filterNormalPoints);
-        splitFilter.Connect(smoothFilter);
-        smoothFilter.Connect(transformTemperatureAndConvertAltitude);
+        splitFilter.Connect(bufferedSmoothingFilter);
+        bufferedSmoothingFilter.Connect(transformTemperatureAndConvertAltitude);
         transformTemperatureAndConvertAltitude.Connect(bytesToFrame);
         bytesToFrame.Connect(fileReaderSource);
 
@@ -115,7 +84,7 @@ public class SystemB {
         fileReaderSource.start();
         bytesToFrame.start();
         transformTemperatureAndConvertAltitude.start();
-        smoothFilter.start();
+        bufferedSmoothingFilter.start();
         splitFilter.start();
         filterNormalPoints.start();
         sink.start();

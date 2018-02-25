@@ -64,13 +64,13 @@ public class SystemC {
          (frame) -> {
          return Optional.of(timeStampFormatter.format(frame.timestamp) + "\t" +
                  altitudeFormatter.format(frame.originalPressure) + "\n");
-         });
+     });
 
      // main branch
 
      // final output sink
      FramePrinterSink sink = new FramePrinterSink(
-         "OutputB.dat",
+         "OutputC.dat",
          "Time:\t\t\t" + "Temperature (C):\t" + "Altitude (m):\t" + "Pressure (psi):\t" + "\n",
          (frame) -> {
              boolean smoothedPressure = frame.smoothedPressure != null;

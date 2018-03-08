@@ -1,5 +1,17 @@
 # 17655-D
 
+## A2
+
+### MySQL setup on Mac OS:
+
+1. download Docker 
+
+2. run:
+```bash
+cd A2-2015
+chmod +x spin_off_mysql.sh
+```
+
 ## A1
 
 Due Feb 22nd.

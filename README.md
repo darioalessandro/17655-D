@@ -4,7 +4,7 @@
 
 ### MySQL setup on Mac OS:
 
-1. download Docker 
+1. download Docker from: https://www.docker.com/docker-mac 
 
 2. run:
 ```bash

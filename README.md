@@ -12,6 +12,52 @@ cd A2-2015
 chmod +x spin_off_mysql.sh
 ```
 
+### Backend
+
+#### 1. Install yarn for package management
+
+https://yarnpkg.com/lang/en/docs/install/
+
+#### 2. Install nvm to install different versions of nodejs
+
+https://www.codementor.io/mercurial/how-to-install-node-js-on-macos-sierra-mphz41ekk
+
+#### 3. Install node v8.10.0 using nvm
+
+```bash
+nvm install 8.10.0
+```
+
+#### 4. run the backend application
+
+```bash
+cd A2-2015/A2-Rewrite/backend 
+yarn install
+yarn start
+```
+
+Open http://localhost:3000
+
+You should see:
+
+```Backend is alive```
+
+### Frontend
+
+#### 1. Install watchman
+
+```bash
+brew install watchman
+```
+
+#### 2. Start the app
+
+```bash
+cd A2-2015/A2-Rewrite/frontend 
+yarn install
+yarn start
+```
+
 ## A1
 
 Due Feb 22nd.

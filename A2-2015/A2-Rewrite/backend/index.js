@@ -13,7 +13,6 @@ const sequelize = new Sequelize('inventory_v2', 'remote', 'remote_pass', {
         acquire: 30000,
         idle: 10000
     },
-
     // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
     operatorsAliases: false
 });
@@ -49,6 +48,14 @@ const Product = sequelize.define('product', {
 
 app.listen(port);
 
+// Enable cors so that we can call the api from the React UI
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.get('/', function (req, res) {
     res.send('Backend is Alive')
 });
@@ -57,4 +64,4 @@ app.get('/products',async  function (req, res) {
     res.json(await Product.findAll({}));
 });
 
-console.log('todo list RESTful API server started on: ' + port);
+console.log('RESTful API server started on: ' + port);

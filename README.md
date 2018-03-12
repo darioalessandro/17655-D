@@ -40,7 +40,15 @@ Open http://localhost:3001
 
 You should see:
 
-```Backend is alive```
+![GitHub Logo](A2-2015/A2-Rewrite/imgs/api.png)
+
+## Troubleshoot
+
+If you get some weird mysql error, install mysql2 globally using:
+
+```bash
+npm install -g mysql2
+```
 
 ### Frontend
 

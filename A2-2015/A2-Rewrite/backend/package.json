@@ -5,10 +5,12 @@
   "main": "index.js",
   "author": "Dario",
   "license": "MIT",
-  "scripts" : {
+  "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "4.16.2"
+    "express": "4.16.2",
+    "mysql2": "1.5.2",
+    "sequelize": "4.36.0"
   }
 }

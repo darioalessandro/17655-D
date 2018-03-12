@@ -20,6 +20,8 @@ USE inventory_v2;
 DROP TABLE IF EXISTS `company`;
 CREATE TABLE `company` (
  `id` varchar(10) NOT NULL,
+  `created_at` TIMESTAMP,
+  `updated_at` TIMESTAMP,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -27,6 +29,8 @@ CREATE TABLE `company` (
 DROP TABLE IF EXISTS `product_category`;
 CREATE TABLE `product_category` (
   `id` varchar(20) NOT NULL,
+  `created_at` TIMESTAMP,
+  `updated_at` TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -39,6 +43,8 @@ CREATE TABLE `product` (
  `description` varchar(80) NOT NULL,
  `quantity` int(11) NOT NULL,
  `price` float(10,2) NOT NULL,
+  `created_at` TIMESTAMP,
+  `updated_at` TIMESTAMP,
   PRIMARY KEY (`company_id`, `category`, `product_code`),
   FOREIGN KEY (`company_id`) REFERENCES company(id),
   FOREIGN KEY (`category`) REFERENCES product_category(id)

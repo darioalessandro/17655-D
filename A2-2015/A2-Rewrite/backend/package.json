@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "A2",
+  "main": "index.js",
+  "author": "Dario",
+  "license": "MIT",
+  "scripts" : {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "4.16.2"
+  }
+}

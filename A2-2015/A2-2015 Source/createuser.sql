@@ -1,0 +1,1 @@
+GRANT ALL PRIVILEGES ON *.* TO 'remote'@'localhost' IDENTIFIED BY 'remote_pass';

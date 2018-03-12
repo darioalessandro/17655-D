@@ -36,7 +36,7 @@ yarn install
 yarn start
 ```
 
-Open http://localhost:3000
+Open http://localhost:3001
 
 You should see:
 
@@ -57,6 +57,12 @@ cd A2-2015/A2-Rewrite/frontend
 yarn install
 yarn start
 ```
+
+Open http://localhost:3000
+
+you should see the UI
+
+![GitHub Logo](A2-2015/A2-Rewrite/imgs/menu.gif)
 
 ## A1
 

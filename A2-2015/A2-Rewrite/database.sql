@@ -1,8 +1,5 @@
--- MySQL dump 10.13  Distrib 5.1.42, for Win32 (ia32)
---
--- Host: localhost    Database: inventory
--- ------------------------------------------------------
--- Server version	5.1.42-community
+/* Created by dario.talarico@gm.com */
+/* A2 CMU */
 
 USE inventory_v2;
 
@@ -159,4 +156,3 @@ INSERT INTO inventory_v2.product (company_id, category, product_code, descriptio
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-02-10 15:33:35

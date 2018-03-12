@@ -10,6 +10,18 @@
 ```bash
 cd A2-2015
 chmod +x spin_off_mysql.sh
+./spin_off_mysql.sh
+```
+
+If you restart your computer, the docker container will die, please find the container name using
+
+```bash
+docker ps -a
+```
+
+Then run it using:
+```bash
+docker <container-name> start
 ```
 
 ### Backend

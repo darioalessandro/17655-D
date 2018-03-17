@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from 'material-ui/Typography';
 
-class Inventory extends React.Component {
+class SessionLogs extends React.Component {
     constructor(props) {
         super();
         this.state={products:[]};
@@ -14,23 +14,22 @@ class Inventory extends React.Component {
     }
 
     fetchProducts() {
-        return fetch(`${this.props.backendURL}/products`).then(result=>result.json());
+        return fetch(`${this.props.backendURL}/auth/logs`).then(result=>result.json());
     }
 
     render() {
-        console.log('this.state.products ', JSON.stringify(this.state));
         return <div>
-            <Typography>Inventory</Typography>
+            <Typography>Session Logs</Typography>
             {
                (this.state.products.length === 0) ?
-                   <Typography>No products found! this is most likely a db error</Typography>
+                   <Typography>No login data found! this is most likely a db error</Typography>
                    : this.state.products.map(p => {
-                       const key = `${p.company_id}-${p.category}-${p.product_code}`;
-                       return <Typography key={key}>{p.company_id} {p.category} {p.product_code} {p.description} {p.price} </Typography>
+                       const key = `${p.email}${p.id}`;
+                       return <Typography key={key}>{p.email} {p.name} {p.created_at} {p.event} </Typography>
                    })
             }
         </div>
     }
 }
 
-export default Inventory;
+export default SessionLogs;

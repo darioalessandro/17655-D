@@ -17,6 +17,21 @@ USE inventory_v2;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 
+USE inventory_v2;
+
+DROP TABLE IF EXISTS `auth_logs`;
+CREATE TABLE `auth_logs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `token` TEXT NOT NULL,
+  `event` varchar(50) NOT NULL,
+  `created_at` TIMESTAMP,
+  `updated_at` TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 DROP TABLE IF EXISTS `company`;
 CREATE TABLE `company` (
  `id` varchar(10) NOT NULL,

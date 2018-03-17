@@ -72,6 +72,13 @@ brew install watchman
 
 #### 2. Start the app
 
+Define ```REACT_APP_GOOGLE_OAUTH_TOKEN``` env var.
+
+```bash
+export REACT_APP_GOOGLE_OAUTH_TOKEN=<token>
+export REACT_APP_BACKEND_URL=http://localhost:3001
+```
+
 ```bash
 cd A2-2015/A2-Rewrite/frontend 
 yarn install

@@ -4,7 +4,7 @@
 
 ### MySQL setup on Mac OS:
 
-1. download Docker from: https://www.docker.com/docker-mac 
+1. download Docker from: https://www.docker.com/docker-mac
 
 2. run:
 ```bash
@@ -43,7 +43,7 @@ nvm install 8.10.0
 #### 4. run the backend application
 
 ```bash
-cd A2-2015/A2-Rewrite/backend 
+cd A2-2015/A2-Rewrite/backend
 yarn install
 yarn start
 ```
@@ -70,7 +70,13 @@ npm install -g mysql2
 brew install watchman
 ```
 
-#### 2. Start the app
+#### 2. install react-google-login
+
+```bash
+npm install react-google-login
+```
+
+#### 3. Start the app
 
 Define ```REACT_APP_GOOGLE_OAUTH_TOKEN``` env var.
 
@@ -80,7 +86,7 @@ export REACT_APP_BACKEND_URL=http://localhost:3001
 ```
 
 ```bash
-cd A2-2015/A2-Rewrite/frontend 
+cd A2-2015/A2-Rewrite/frontend
 yarn install
 yarn start
 ```

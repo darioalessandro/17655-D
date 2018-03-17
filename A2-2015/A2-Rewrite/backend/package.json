@@ -9,9 +9,9 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "body-parser": "1.18.2",
     "express": "4.16.2",
     "mysql2": "1.5.2",
-    "react-google-login": "^3.0.10",
     "sequelize": "4.36.0"
   }
 }

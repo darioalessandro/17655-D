@@ -15,8 +15,10 @@ import GoogleLogin from 'react-google-login';
 import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import OrdersIcon from 'material-ui-icons/LocalGroceryStore';
 import InventoryIcon from 'material-ui-icons/Work';
+import LockIcon from 'material-ui-icons/Lock';
 import Orders from './Orders'
 import Inventory from './Inventory'
+import SessionLogs from './SessionLogs'
 
 const drawerWidth = 240;
 
@@ -89,6 +91,7 @@ const styles = theme => ({
 
 const InventorySection = 'Inventory';
 const OrdersSection = 'Orders';
+const SessionsSection = 'Session Logs';
 
 class EEPSystem extends React.Component {
     state = {
@@ -120,9 +123,31 @@ class EEPSystem extends React.Component {
                     </ListItemIcon>
                     <ListItemText primary="Inventory" />
                 </ListItem>
+                <ListItem button onClick={() => this.setState({ section: SessionsSection})}>
+                    <ListItemIcon>
+                        <LockIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Session Logs" />
+                </ListItem>
                 <Divider />
             </div>
         );
+
+        var selectedSession;
+
+        switch (this.state.section) {
+            case InventorySection:
+                selectedSession = <Inventory backendURL={this.props.backendURL}/>;
+                break;
+            case OrdersSection:
+                selectedSession = <Orders backendURL={this.props.backendURL}/>;
+                break;
+            case SessionsSection:
+                selectedSession = <SessionLogs backendURL={this.props.backendURL}/>;
+                break;
+            default:
+                selectedSession = <Typography> Unknown Section </Typography>;
+        }
 
         const mainMenu = (
             <div className={classes.root}>
@@ -174,7 +199,7 @@ class EEPSystem extends React.Component {
                 </Hidden>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    { (this.state.section === 'Inventory') ? <Inventory/> : <Orders/> }
+                    { selectedSession}
                 </main>
             </div>
         );
@@ -206,6 +231,18 @@ class EEPSystem extends React.Component {
         this.setState({ authToken: response.tokenId });
         this.setState({ name: response.profileObj.name });
         this.setState({ email: response.profileObj.email });
+        fetch(`${this.props.backendURL}/auth/log/login`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: this.state.name,
+                email: this.state.email,
+                token: this.state.authToken,
+            })
+        });
     }
 
     loginFailure() {
@@ -213,6 +250,18 @@ class EEPSystem extends React.Component {
     }
 
     logout() {
+        fetch(`${this.props.backendURL}/auth/log/logout`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: this.state.name,
+                email: this.state.email,
+                token: this.state.authToken,
+            })
+        });
         window.open('https://accounts.google.com/logout', '_newtab');
         this.setState({ authToken: null });
     }

@@ -2,13 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer';
+import Card, { CardHeader, CardContent } from 'material-ui/Card';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
+import Button from 'material-ui/Button';
 import Hidden from 'material-ui/Hidden';
 import Divider from 'material-ui/Divider';
 import MenuIcon from 'material-ui-icons/Menu';
+import GoogleLogin from 'react-google-login';
 import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import OrdersIcon from 'material-ui-icons/LocalGroceryStore';
 import InventoryIcon from 'material-ui-icons/Work';
@@ -18,6 +21,33 @@ import Inventory from './Inventory'
 const drawerWidth = 240;
 
 const styles = theme => ({
+    googleButton: {
+        display: 'inline-block',
+        background: 'rgb(209, 72, 54)',
+        color: 'rgb(255, 255, 255)',
+        width: '100%',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+        borderRadius: '2px',
+        border: '1px solid transparent',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        fontFamily: 'Roboto',
+    },
+    login: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        background: '#e5e8e5',
+    },
+
+    card: {
+        alignSelf: 'center',
+        minWidth: 275,
+        alignItems:'center',
+        justifyContent:'center',
+    },
     root: {
         flexGrow: 1,
         height: '100%',
@@ -26,6 +56,7 @@ const styles = theme => ({
         position: 'relative',
         display: 'flex',
         width: '100%',
+        background: '#e5e8e5',
     },
     appBar: {
         position: 'absolute',
@@ -51,6 +82,9 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default,
         padding: theme.spacing.unit * 3,
     },
+    flex: {
+        flex: 1,
+    },
 });
 
 const InventorySection = 'Inventory';
@@ -60,6 +94,7 @@ class EEPSystem extends React.Component {
     state = {
         mobileOpen: false,
         section: InventorySection,
+        authToken: null,
     };
 
     handleDrawerToggle = () => {
@@ -89,7 +124,7 @@ class EEPSystem extends React.Component {
             </div>
         );
 
-        return (
+        const mainMenu = (
             <div className={classes.root}>
                 <AppBar className={classes.appBar}>
                     <Toolbar>
@@ -101,9 +136,13 @@ class EEPSystem extends React.Component {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="title" color="inherit" noWrap>
+                        <Typography variant="title" color="inherit" className={classes.flex}>
                             EEP Leaf Tech system
                         </Typography>
+                        <Typography color="inherit">
+                            {this.state.name}
+                        </Typography>
+                        <Button color="inherit" onClick={this.logout.bind(this)}>Logout</Button>
                     </Toolbar>
                 </AppBar>
                 <Hidden mdUp>
@@ -139,6 +178,43 @@ class EEPSystem extends React.Component {
                 </main>
             </div>
         );
+
+        const auth = <div className={classes.login}>
+            <Card className={classes.card}>
+                <CardHeader
+                    title="EEP-Leaf Tech System"
+                />
+                <CardContent>
+                    <GoogleLogin
+                        className={classes.googleButton}
+                        clientId={this.props.gauthId}
+                        buttonText='Login to EEP'
+                        onSuccess={this.loginSuccess.bind(this)}
+                        onFailure={this.loginFailure.bind(this)}
+                    />
+                </CardContent>
+            </Card>
+        </div>;
+
+        return (!this.state.authToken) ? auth : mainMenu;
+    }
+
+
+
+    loginSuccess(response) {
+        console.log(JSON.stringify(response));
+        this.setState({ authToken: response.tokenId });
+        this.setState({ name: response.profileObj.name });
+        this.setState({ email: response.profileObj.email });
+    }
+
+    loginFailure() {
+        this.setState({ authToken: null });
+    }
+
+    logout() {
+        window.open('https://accounts.google.com/logout', '_newtab');
+        this.setState({ authToken: null });
     }
 }
 

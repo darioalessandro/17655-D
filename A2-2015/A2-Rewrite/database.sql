@@ -2,7 +2,6 @@
 /* A2 CMU */
 
 USE eep_operations;
-USE eep_operations;
 
 DROP TABLE IF EXISTS `auth_logs`;
 DROP TABLE IF EXISTS `product`;

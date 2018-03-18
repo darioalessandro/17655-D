@@ -43,7 +43,7 @@ const ProductCategory = sequelize.define('product_category', {
     id: {
             type: Sequelize.STRING,
             primaryKey: true
-        },
+    },
             created_at: Sequelize.TIME,
             created_at: Sequelize.TIME
     },{
@@ -65,24 +65,29 @@ const AuthLogs = sequelize.define('auth_logs', {
 
 /*      Order table      */
 const Orders = sequelize.define('order', {
-        createdAt: Sequelize.TIME,
-        customerFirstName: Sequelize.STRING,
-        customerLastName: Sequelize.STRING,
-        customerAddress: Sequelize.STRING,
-        customerPhone: Sequelize.STRING,
+        id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true
+        },
+        created_at: Sequelize.TIME,
+        customer_first_name: Sequelize.STRING,
+        customer_last_name: Sequelize.STRING,
+        customer_address: Sequelize.STRING,
+        customer_phone: Sequelize.STRING,
         price: Sequelize.DOUBLE,
-        shippedFlag: Sequelize.BOOLEAN
+        shipped_flag: Sequelize.BOOLEAN
     },{
         underscored: true,
         freezeTableName: true,
-        tableName: 'order'
+        tableName: 'order',
+        timestamps: false
 });
 
 const Order_Items = sequelize.define('order_item', {
-        orderId: Sequelize.INTEGER,
-        productCompanyId: Sequelize.STRING,
-        productCategory: Sequelize.STRING,
-        productCode: Sequelize.STRING,
+        order_id: Sequelize.INTEGER,
+        product_company_id: Sequelize.STRING,
+        product_category: Sequelize.STRING,
+        product_code: Sequelize.STRING,
         quantity: Sequelize.INTEGER
     },{
         underscored: true,
@@ -158,6 +163,23 @@ app.get('/products',async  function (req, res) {
 
 app.get('/product_categories', async function(req, res) {
     res.json(await ProductCategory.findAll({}));
+});
+
+app.get('/orders', async  function (req, res) {
+    var showPending = ('false' != req.param('show_pending', true));
+    var showShipped = ('false' != req.param('show_shipped', true));
+
+    if(!showPending && !showShipped){
+        return res.json([]);
+    }else if(showPending != showShipped) {
+        res.json(await Orders.findAll({
+            where: {
+                shipped_flag: showShipped
+            }
+        }));
+    }else {
+        res.json(await Orders.findAll({}));
+    }
 });
 
 console.log('RESTful API server started on: ' + port);

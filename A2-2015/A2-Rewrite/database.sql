@@ -2,12 +2,17 @@
 /* A2 CMU */
 
 USE eep_operations;
+USE eep_operations;
 
 DROP TABLE IF EXISTS `auth_logs`;
+DROP TABLE IF EXISTS `order_item`;
 DROP TABLE IF EXISTS `product`;
+DROP TABLE IF EXISTS `order`;
+
+
 DROP TABLE IF EXISTS `company`;
 DROP TABLE IF EXISTS `product_category`;
-DROP TABLE IF EXISTS `order`;
+
 
 CREATE TABLE `auth_logs` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -60,6 +65,17 @@ CREATE TABLE `order` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `order_item` (
+  `order_id` int(11) NOT NULL,
+  `product_company_id` varchar(10) NOT NULL, 
+  `product_category` varchar(30) NOT NULL,
+  `product_code` varchar(10) NOT NULL,
+  `quantity` float(10,2) NOT NULL,
+  PRIMARY KEY (`order_id`, `product_company_id`, `product_category`, `product_code`),
+  FOREIGN KEY (`order_id`) REFERENCES eep_operations.order(id),
+  FOREIGN KEY (`product_company_id`, `product_category`, `product_code`) REFERENCES product(company_id, category, product_code)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 /* Insert data */
 
 /* Create companies */
@@ -75,7 +91,6 @@ INSERT INTO eep_operations.product_category (id) VALUES ('referencematerials');
 INSERT INTO eep_operations.product_category (id) VALUES ('seeds');
 INSERT INTO eep_operations.product_category (id) VALUES ('shrubs');
 INSERT INTO eep_operations.product_category (id) VALUES ('trees');
-
 /* Add all Leaf tech inventory data */
 
 INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
@@ -161,3 +176,13 @@ INSERT INTO eep_operations.product (company_id, category, product_code, descript
   ('EPP','trees','CT001','Cigar Tree',10,83.00),
   ('EPP','trees','AM002','Arden Maple',40,70.00),
   ('EPP','trees','FL002','Finger Leaf Elm',16,75.00);
+  
+INSERT INTO eep_operations.order (id, created_at, customer_first_name, customer_last_name, customer_address, customer_phone, price, shipped_flag) VALUES 
+	(1, '2018-08-05 18:19:03', 'Paul', 'Fenton', '123 Blue Cheese Ave. The Moon', '222-333-4092', 370.00, false),
+    (2, '2018-08-05 18:19:03', 'Dario', 'Lecina', '1600 Pennsylvania Ave.', '222-323-4444', 47.50, false);
+    
+INSERT INTO eep_operations.order_item (order_id, product_company_id, product_category, product_code, quantity) VALUES 
+	(1, 'Leaf Tech', 'cultureboxes', 'PB001', 1),
+    (1, 'Leaf Tech', 'cultureboxes', 'PB002', 1),
+    (2, 'Leaf Tech', 'cultureboxes', 'PB002', 2),
+    (2, 'Leaf Tech', 'cultureboxes', 'PB003', 1);

@@ -3,18 +3,15 @@ const express = require('express'),
     port = process.env.PORT || 3001;
 const jsonParser = require('body-parser').json();
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('inventory_v2', 'remote', 'remote_pass', {
-    host: 'localhost',
+const sequelize = new Sequelize('eep_operations', 'eep_admin', 'eep_password', {
+    host: 'eep-operations.c0ucixdvk0wc.us-east-1.rds.amazonaws.com',
+    port: 3306,
     dialect: 'mysql',
-
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
+    dialectOptions: {
+        ssl: 'Amazon RDS'
     },
-    // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
-    operatorsAliases: false
+    pool: { maxConnections: 5, maxIdleTime: 30},
+    language: 'en'
 });
 
 const Product = sequelize.define('product', {

@@ -143,8 +143,17 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
 });
 
 app.get('/products',async  function (req, res) {
-    console.log("username: ", process.env.EEP_DATABASE_ADMIN_NAME, "password: ", process.env.EEP_DATABASE_PASSWORD);
-    res.json(await Product.findAll({}));
+    var filter = req.param('category_filter', null);
+
+    if(filter) {
+        res.json(await Product.findAll({
+            where: {
+                category: filter
+            }
+        }));
+    } else {
+        res.json(await Product.findAll({}));
+    }
 });
 
 app.get('/product_categories', async function(req, res) {

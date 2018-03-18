@@ -33,14 +33,8 @@ const Product = sequelize.define('product', {
     quantity: Sequelize.INTEGER,
     price: Sequelize.DOUBLE,
     },{
-    // don't use camelcase for automatically added attributes but underscore style
-    // so updatedAt will be updated_at
     underscored: true,
-    // disable the modification of tablenames; By default, sequelize will automatically
-    // transform all passed model names (first parameter of define) into plural.
-    // if you don't want that, set the following
     freezeTableName: true,
-    // define the table's name
     tableName: 'product'
 });
 
@@ -50,14 +44,8 @@ const AuthLogs = sequelize.define('auth_logs', {
     token: Sequelize.INTEGER,
     event: Sequelize.INTEGER,
 },{
-    // don't use camelcase for automatically added attributes but underscore style
-    // so updatedAt will be updated_at
     underscored: true,
-    // disable the modification of tablenames; By default, sequelize will automatically
-    // transform all passed model names (first parameter of define) into plural.
-    // if you don't want that, set the following
     freezeTableName: true,
-    // define the table's name
     tableName: 'auth_logs'
 });
 

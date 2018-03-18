@@ -83,16 +83,29 @@ const Orders = sequelize.define('order', {
         timestamps: false
 });
 
-const Order_Items = sequelize.define('order_item', {
-        order_id: Sequelize.INTEGER,
-        product_company_id: Sequelize.STRING,
-        product_category: Sequelize.STRING,
-        product_code: Sequelize.STRING,
+const OrderItems = sequelize.define('order_item', {
+        order_id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true
+        },
+        product_company_id: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
+        product_category: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
+        product_code: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
         quantity: Sequelize.INTEGER
     },{
         underscored: true,
         freezeTableName: true,
-        tableName: 'order_item'
+        tableName: 'order_item',
+        timestamps: false
 });
 
 
@@ -180,6 +193,20 @@ app.get('/orders', async  function (req, res) {
     }else {
         res.json(await Orders.findAll({}));
     }
+});
+
+app.get('/order_item', async  function (req, res) {
+    var order_id = req.param('order_id', null);
+
+    if(order_id){
+        res.json(await OrderItems.findAll({
+            where: {
+                order_id: order_id
+            }
+        }));  
+    } else {
+        return res.json([]);
+    }   
 });
 
 console.log('RESTful API server started on: ' + port);

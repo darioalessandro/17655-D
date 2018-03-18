@@ -114,7 +114,7 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
 });
 
 app.get('/products',async  function (req, res) {
-    console.log("passwords: ", process.env.EEP_DATABASE_ADMIN_NAME, process.env.EEP_DATABASE_PASSWORD);
+    console.log("username: ", process.env.EEP_DATABASE_ADMIN_NAME, "password: ", process.env.EEP_DATABASE_PASSWORD);
     res.json(await Product.findAll({}));
 });
 

@@ -33,32 +33,79 @@ const Product = sequelize.define('product', {
     quantity: Sequelize.INTEGER,
     price: Sequelize.DOUBLE,
     },{
-    // don't use camelcase for automatically added attributes but underscore style
-    // so updatedAt will be updated_at
     underscored: true,
-    // disable the modification of tablenames; By default, sequelize will automatically
-    // transform all passed model names (first parameter of define) into plural.
-    // if you don't want that, set the following
     freezeTableName: true,
-    // define the table's name
     tableName: 'product'
 });
 
+/*      Prooduct Category table      */
+const ProductCategory = sequelize.define('product_category', {
+    id: {
+            type: Sequelize.STRING,
+            primaryKey: true
+    },
+            created_at: Sequelize.TIME,
+            created_at: Sequelize.TIME
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'product_category'
+});
+
 const AuthLogs = sequelize.define('auth_logs', {
-    name: Sequelize.STRING,
-    email: Sequelize.STRING,
-    token: Sequelize.INTEGER,
-    event: Sequelize.INTEGER,
-},{
-    // don't use camelcase for automatically added attributes but underscore style
-    // so updatedAt will be updated_at
-    underscored: true,
-    // disable the modification of tablenames; By default, sequelize will automatically
-    // transform all passed model names (first parameter of define) into plural.
-    // if you don't want that, set the following
-    freezeTableName: true,
-    // define the table's name
-    tableName: 'auth_logs'
+        name: Sequelize.STRING,
+        email: Sequelize.STRING,
+        token: Sequelize.INTEGER,
+        event: Sequelize.INTEGER,
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'auth_logs'
+});
+
+/*      Order table      */
+const Orders = sequelize.define('order', {
+        id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true
+        },
+        created_at: Sequelize.TIME,
+        customer_first_name: Sequelize.STRING,
+        customer_last_name: Sequelize.STRING,
+        customer_address: Sequelize.STRING,
+        customer_phone: Sequelize.STRING,
+        price: Sequelize.DOUBLE,
+        shipped_flag: Sequelize.BOOLEAN
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'order',
+        timestamps: false
+});
+
+const OrderItems = sequelize.define('order_item', {
+        order_id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true
+        },
+        product_company_id: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
+        product_category: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
+        product_code: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
+        quantity: Sequelize.INTEGER
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'order_item',
+        timestamps: false
 });
 
 
@@ -114,8 +161,52 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
 });
 
 app.get('/products',async  function (req, res) {
-    console.log("username: ", process.env.EEP_DATABASE_ADMIN_NAME, "password: ", process.env.EEP_DATABASE_PASSWORD);
-    res.json(await Product.findAll({}));
+    var filter = req.param('category_filter', null);
+
+    if(filter) {
+        res.json(await Product.findAll({
+            where: {
+                category: filter
+            }
+        }));
+    } else {
+        res.json(await Product.findAll({}));
+    }
+});
+
+app.get('/product_categories', async function(req, res) {
+    res.json(await ProductCategory.findAll({}));
+});
+
+app.get('/orders', async  function (req, res) {
+    var showPending = ('false' != req.param('show_pending', true));
+    var showShipped = ('false' != req.param('show_shipped', true));
+
+    if(!showPending && !showShipped){
+        return res.json([]);
+    }else if(showPending != showShipped) {
+        res.json(await Orders.findAll({
+            where: {
+                shipped_flag: showShipped
+            }
+        }));
+    }else {
+        res.json(await Orders.findAll({}));
+    }
+});
+
+app.get('/order_item', async  function (req, res) {
+    var order_id = req.param('order_id', null);
+
+    if(order_id){
+        res.json(await OrderItems.findAll({
+            where: {
+                order_id: order_id
+            }
+        }));  
+    } else {
+        return res.json([]);
+    }   
 });
 
 console.log('RESTful API server started on: ' + port);

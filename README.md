@@ -43,8 +43,8 @@ nvm install 8.10.0
 #### 4. set backend database credentials
 
 ```bash
-export EEP_DATABASE_ADMIN_NAME='eep_admin'
-export EEP_DATABASE_PASSWORD='eep_password'
+export EEP_DATABASE_ADMIN_NAME=<username from email>
+export EEP_DATABASE_PASSWORD=<password from email>
 ```
 
 #### 5. run the backend application
@@ -105,6 +105,18 @@ Open http://localhost:3000
 you should see the UI
 
 ![GitHub Logo](A2-2015/A2-Rewrite/imgs/menu.gif)
+
+### Using the Back-End API (Examples)
+
+Get all product categories: '<url>/product_categories'
+  
+Get product inventory for 'shrubs': '<url>/products?category_filter=shrubs'
+  
+Get all orders: '<url>/orders?show_pending=true&show_shipped=true'
+ 
+Get items for order #2: '<url>/order_item?order_id=2'
+
+
 
 ## A1
 

@@ -43,8 +43,8 @@ nvm install 8.10.0
 #### 4. set backend database credentials
 
 ```bash
-export EEP_DATABASE_ADMIN_NAME='eep_admin'
-export EEP_DATABASE_PASSWORD='eep_password'
+export EEP_DATABASE_ADMIN_NAME=<username from email>
+export EEP_DATABASE_PASSWORD=<password from email>
 ```
 
 #### 5. run the backend application

@@ -40,13 +40,22 @@ https://www.codementor.io/mercurial/how-to-install-node-js-on-macos-sierra-mphz4
 nvm install 8.10.0
 ```
 
-#### 4. run the backend application
+#### 4. set backend database credentials
+
+```bash
+export EEP_DATABASE_ADMIN_NAME='eep_admin'
+export EEP_DATABASE_PASSWORD='eep_password'
+```
+
+#### 5. run the backend application
 
 ```bash
 cd A2-2015/A2-Rewrite/backend
 yarn install
 yarn start
 ```
+
+
 
 Open http://localhost:3001
 

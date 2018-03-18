@@ -1,25 +1,14 @@
 /* Created by dario.talarico@gm.com */
 /* A2 CMU */
 
-USE inventory_v2;
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-
-USE inventory_v2;
+USE eep_operations;
 
 DROP TABLE IF EXISTS `auth_logs`;
+DROP TABLE IF EXISTS `product`;
+DROP TABLE IF EXISTS `company`;
+DROP TABLE IF EXISTS `product_category`;
+DROP TABLE IF EXISTS `order`;
+
 CREATE TABLE `auth_logs` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(50) NOT NULL,
@@ -30,27 +19,21 @@ CREATE TABLE `auth_logs` (
   `updated_at` TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS `company`;
 CREATE TABLE `company` (
  `id` varchar(10) NOT NULL,
   `created_at` TIMESTAMP,
   `updated_at` TIMESTAMP,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS `product_category`;
 CREATE TABLE `product_category` (
   `id` varchar(20) NOT NULL,
   `created_at` TIMESTAMP,
   `updated_at` TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
  `company_id` varchar(10) NOT NULL,
  `category` varchar(30) NOT NULL,
@@ -64,27 +47,38 @@ CREATE TABLE `product` (
   FOREIGN KEY (`company_id`) REFERENCES company(id),
   FOREIGN KEY (`category`) REFERENCES product_category(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `order` (
+  `id` int(11) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL,
+  `customer_first_name` varchar(64) DEFAULT NULL,
+  `customer_last_name` varchar(64) DEFAULT NULL,
+  `customer_address` varchar(256) NOT NULL,
+  `customer_phone` varchar(45) NOT NULL,
+  `price` float(10,2) NOT NULL,
+  `shipped_flag` tinyint(4) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* Insert data */
 
 /* Create companies */
 
-INSERT INTO inventory_v2.company (id) VALUES ('EPP');
-INSERT INTO inventory_v2.company (id) VALUES ('Leaf Tech');
+INSERT INTO eep_operations.company (id) VALUES ('EPP');
+INSERT INTO eep_operations.company (id) VALUES ('Leaf Tech');
 
 /* Create categories */
 
-INSERT INTO inventory_v2.product_category (id) VALUES ('cultureboxes');
-INSERT INTO inventory_v2.product_category (id) VALUES ('genomics');
-INSERT INTO inventory_v2.product_category (id) VALUES ('referencematerials');
-INSERT INTO inventory_v2.product_category (id) VALUES ('seeds');
-INSERT INTO inventory_v2.product_category (id) VALUES ('shrubs');
-INSERT INTO inventory_v2.product_category (id) VALUES ('trees');
+INSERT INTO eep_operations.product_category (id) VALUES ('cultureboxes');
+INSERT INTO eep_operations.product_category (id) VALUES ('genomics');
+INSERT INTO eep_operations.product_category (id) VALUES ('referencematerials');
+INSERT INTO eep_operations.product_category (id) VALUES ('seeds');
+INSERT INTO eep_operations.product_category (id) VALUES ('shrubs');
+INSERT INTO eep_operations.product_category (id) VALUES ('trees');
 
 /* Add all Leaf tech inventory data */
 
-INSERT INTO inventory_v2.product (company_id, category, product_code, description, quantity, price) VALUES
+INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
   ('Leaf Tech','cultureboxes','PB001','Magenta Vessels',10,350.00),
   ('Leaf Tech','cultureboxes','PB002','Mebrane Raft',75,20.00),
   ('Leaf Tech','cultureboxes','PB003','Growth Mebrane Wetting Agent',200,7.50),
@@ -93,7 +87,7 @@ INSERT INTO inventory_v2.product (company_id, category, product_code, descriptio
   ('Leaf Tech','cultureboxes','PB006','Sun Bags',170,50.00),
   ('Leaf Tech','cultureboxes','PB007','Plant tissue culture vessel',25,62.60);
 
-INSERT INTO inventory_v2.product  (company_id, category, product_code, description, quantity, price) VALUES
+INSERT INTO eep_operations.product  (company_id, category, product_code, description, quantity, price) VALUES
   ('Leaf Tech','genomics', 'GN001','Nylon transfer membrane sheet size 12.5 cm × 8 cm ',100,250.00),
   ('Leaf Tech','genomics','GN002','Nylon transfer membrane sheet size 15 cm × 20 cm',100,275.00),
   ('Leaf Tech','genomics','GN003','Nylon transfer membrane sheet size 20 cm × 20 cm ',100,300.00),
@@ -107,7 +101,7 @@ INSERT INTO inventory_v2.product  (company_id, category, product_code, descripti
   ('Leaf Tech','genomics','GN011','Cover glasses size 24 mm × 50 mm ',200,30.00),
   ('Leaf Tech','genomics','GN012','Slide moat microscope slide incubator AC input 115 V',5,2300.00);
 
-INSERT INTO inventory_v2.product (company_id, category, product_code, description, quantity, price) VALUES
+INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
   ('Leaf Tech','referencematerials','RF002','Advances In Medicinal Plant Research',10,82.00),
   ('Leaf Tech','referencematerials','RF003','Pharmaceutical Validation Methods',15,90.00),
   ('Leaf Tech','referencematerials','RF004','Pharmaceutical Substances: Syntheses, Patents and Applications',15,530.00),
@@ -120,7 +114,7 @@ INSERT INTO inventory_v2.product (company_id, category, product_code, descriptio
   ('Leaf Tech','referencematerials','RF011','Chemical Engineering Design: Principles, Practice, and Economics',17,98.00),
   ('Leaf Tech','referencematerials','RF001','Handbook of Pharmaceutical Manufacturing Formulation',22,900.00);
 
-INSERT INTO inventory_v2.product (company_id, category, product_code, description, quantity, price) VALUES
+INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
   ('EPP','seeds','MJ001','Madagascar Jasimine',100,22.00),
   ('EPP','seeds','BP001','Butterfly Pea',100,26.00),
   ('EPP','seeds','CS001','Camellia Senensis Tea',80,48.00),
@@ -136,7 +130,7 @@ INSERT INTO inventory_v2.product (company_id, category, product_code, descriptio
   ('EPP','seeds','VF002','Venus Fly Trap',500,30.00),
   ('EPP','seeds','BC003','Black Currant Whirl Hollyhock',300,23.00);
 
-INSERT INTO inventory_v2.product (company_id, category, product_code, description, quantity, price) VALUES
+INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
   ('EPP', 'shrubs','BC001','Blue Camphor',60,45.00),
   ('EPP', 'shrubs','KP001','Kangaroo Paw',68,34.00),
   ('EPP', 'shrubs','YB001','Yellow Buckeye',71,28.00),
@@ -151,7 +145,7 @@ INSERT INTO inventory_v2.product (company_id, category, product_code, descriptio
   ('EPP', 'shrubs','QS002','Queen Sago',30,60.00),
   ('EPP', 'shrubs','GN003','Great Northern Camellias',120,97.00);
 
-INSERT INTO inventory_v2.product (company_id, category, product_code, description, quantity, price) VALUES
+INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
   ('EPP','trees','EF001','Elephant Foot',6,800.00),
   ('EPP','trees','BB001','Black Bamboo',30,100.00),
   ('EPP','trees','BF001','Banyan Fig',13,325.00),
@@ -167,13 +161,3 @@ INSERT INTO inventory_v2.product (company_id, category, product_code, descriptio
   ('EPP','trees','CT001','Cigar Tree',10,83.00),
   ('EPP','trees','AM002','Arden Maple',40,70.00),
   ('EPP','trees','FL002','Finger Leaf Elm',16,75.00);
-
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-

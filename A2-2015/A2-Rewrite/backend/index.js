@@ -1,20 +1,19 @@
+
 const express = require('express'),
     app = express(),
     port = process.env.PORT || 3001;
 const jsonParser = require('body-parser').json();
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('inventory_v2', 'remote', 'remote_pass', {
-    host: 'localhost',
-    dialect: 'mysql',
 
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
+const sequelize = new Sequelize('eep_operations', process.env.EEP_DATABASE_ADMIN_NAME, 'eep_password', {// process.env.EEP_DATABASE_PASSWORD, {
+    host: 'eep-operations.c0ucixdvk0wc.us-east-1.rds.amazonaws.com',
+    port: 3306,
+    dialect: 'mysql',
+    dialectOptions: {
+        ssl: 'Amazon RDS'
     },
-    // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
-    operatorsAliases: false
+    pool: { maxConnections: 5, maxIdleTime: 30},
+    language: 'en'
 });
 
 const Product = sequelize.define('product', {
@@ -115,6 +114,7 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
 });
 
 app.get('/products',async  function (req, res) {
+    console.log("username: ", process.env.EEP_DATABASE_ADMIN_NAME, "password: ", process.env.EEP_DATABASE_PASSWORD);
     res.json(await Product.findAll({}));
 });
 

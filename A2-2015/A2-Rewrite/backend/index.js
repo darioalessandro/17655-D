@@ -1,9 +1,11 @@
+
 const express = require('express'),
     app = express(),
     port = process.env.PORT || 3001;
 const jsonParser = require('body-parser').json();
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('eep_operations', 'eep_admin', 'eep_password', {
+
+const sequelize = new Sequelize('eep_operations', process.env.EEP_DATABASE_ADMIN_NAME, 'eep_password', {// process.env.EEP_DATABASE_PASSWORD, {
     host: 'eep-operations.c0ucixdvk0wc.us-east-1.rds.amazonaws.com',
     port: 3306,
     dialect: 'mysql',
@@ -112,6 +114,7 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
 });
 
 app.get('/products',async  function (req, res) {
+    console.log("passwords: ", process.env.EEP_DATABASE_ADMIN_NAME, process.env.EEP_DATABASE_PASSWORD);
     res.json(await Product.findAll({}));
 });
 

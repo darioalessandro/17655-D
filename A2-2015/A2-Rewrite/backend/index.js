@@ -1,9 +1,11 @@
+
 const express = require('express'),
     app = express(),
     port = process.env.PORT || 3001;
 const jsonParser = require('body-parser').json();
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('eep_operations', 'eep_admin', 'eep_password', {
+
+const sequelize = new Sequelize('eep_operations', process.env.EEP_DATABASE_ADMIN_NAME, 'eep_password', {// process.env.EEP_DATABASE_PASSWORD, {
     host: 'eep-operations.c0ucixdvk0wc.us-east-1.rds.amazonaws.com',
     port: 3306,
     dialect: 'mysql',
@@ -14,33 +16,6 @@ const sequelize = new Sequelize('eep_operations', 'eep_admin', 'eep_password', {
     language: 'en'
 });
 
-/*      AuthLogs table      */
-const AuthLogs = sequelize.define('auth_logs', {
-    name: Sequelize.STRING,
-    email: Sequelize.STRING,
-    token: Sequelize.INTEGER,
-    event: Sequelize.INTEGER
-},{
-    underscored: true,
-    freezeTableName: true,
-    tableName: 'auth_logs'
-});
-
-/*      Prooduct Category table      */
-const ProductCategory = sequelize.define('product_category', {
-    id: {
-       type: Sequelize.STRING,
-       primaryKey: true
-    },
-    created_at: Sequelize.TIME,
-    created_at: Sequelize.TIME
-},{
-    underscored: true,
-    freezeTableName: true,
-    tableName: 'product_category'
-});
-
-/*      Product table      */
 const Product = sequelize.define('product', {
     company_id: {
         type: Sequelize.STRING,
@@ -58,24 +33,32 @@ const Product = sequelize.define('product', {
     quantity: Sequelize.INTEGER,
     price: Sequelize.DOUBLE,
     },{
+    // don't use camelcase for automatically added attributes but underscore style
+    // so updatedAt will be updated_at
     underscored: true,
+    // disable the modification of tablenames; By default, sequelize will automatically
+    // transform all passed model names (first parameter of define) into plural.
+    // if you don't want that, set the following
     freezeTableName: true,
+    // define the table's name
     tableName: 'product'
 });
 
-/*      Order table      */
-const Orders = sequelize.define('order', {
-    createdAt: Sequelize.TIME,
-    customerFirstName: Sequelize.STRING,
-    customerLastName: Sequelize.STRING,
-    customerAddress: Sequelize.STRING,
-    customerPhone: Sequelize.STRING,
-    price: Sequelize.DOUBLE,
-    shippedFlag: Sequelize.BOOLEAN
+const AuthLogs = sequelize.define('auth_logs', {
+    name: Sequelize.STRING,
+    email: Sequelize.STRING,
+    token: Sequelize.INTEGER,
+    event: Sequelize.INTEGER,
 },{
+    // don't use camelcase for automatically added attributes but underscore style
+    // so updatedAt will be updated_at
     underscored: true,
+    // disable the modification of tablenames; By default, sequelize will automatically
+    // transform all passed model names (first parameter of define) into plural.
+    // if you don't want that, set the following
     freezeTableName: true,
-    tableName: 'order'
+    // define the table's name
+    tableName: 'auth_logs'
 });
 
 
@@ -92,8 +75,6 @@ app.use(function(req, res, next) {
 app.get('/', function (req, res) {
     res.send('Backend is Alive')
 });
-
-    // authorization routes ----------------------
 
 app.get('/auth/logs', async function (req, res) {
     const results = (await AuthLogs.findAll({})).map(logEntry => {
@@ -132,12 +113,8 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
     }
 });
 
-    // dimension routes
-app.get('/product_categories', async function(req, res) {
-    res.json(await ProductCategory.findAll({}));
-});
-
 app.get('/products',async  function (req, res) {
+    console.log("username: ", process.env.EEP_DATABASE_ADMIN_NAME, "password: ", process.env.EEP_DATABASE_PASSWORD);
     res.json(await Product.findAll({}));
 });
 

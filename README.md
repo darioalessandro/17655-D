@@ -100,6 +100,18 @@ you should see the UI
 
 ![GitHub Logo](A2-2015/A2-Rewrite/imgs/menu.gif)
 
+### Using the Back-End API (Examples)
+
+Get all product categories: '<url>/product_categories'
+  
+Get product inventory for 'shrubs': '<url>/products?category_filter=shrubs'
+  
+Get all orders: '<url>/orders?show_pending=true&show_shipped=true'
+ 
+Get items for order #2: '<url>/order_item?order_id=2'
+
+
+
 ## A1
 
 Due Feb 22nd.

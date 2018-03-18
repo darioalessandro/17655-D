@@ -38,15 +38,56 @@ const Product = sequelize.define('product', {
     tableName: 'product'
 });
 
+/*      Prooduct Category table      */
+const ProductCategory = sequelize.define('product_category', {
+    id: {
+            type: Sequelize.STRING,
+            primaryKey: true
+        },
+            created_at: Sequelize.TIME,
+            created_at: Sequelize.TIME
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'product_category'
+});
+
 const AuthLogs = sequelize.define('auth_logs', {
-    name: Sequelize.STRING,
-    email: Sequelize.STRING,
-    token: Sequelize.INTEGER,
-    event: Sequelize.INTEGER,
-},{
-    underscored: true,
-    freezeTableName: true,
-    tableName: 'auth_logs'
+        name: Sequelize.STRING,
+        email: Sequelize.STRING,
+        token: Sequelize.INTEGER,
+        event: Sequelize.INTEGER,
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'auth_logs'
+});
+
+/*      Order table      */
+const Orders = sequelize.define('order', {
+        createdAt: Sequelize.TIME,
+        customerFirstName: Sequelize.STRING,
+        customerLastName: Sequelize.STRING,
+        customerAddress: Sequelize.STRING,
+        customerPhone: Sequelize.STRING,
+        price: Sequelize.DOUBLE,
+        shippedFlag: Sequelize.BOOLEAN
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'order'
+});
+
+const Order_Items = sequelize.define('order_item', {
+        orderId: Sequelize.INTEGER,
+        productCompanyId: Sequelize.STRING,
+        productCategory: Sequelize.STRING,
+        productCode: Sequelize.STRING,
+        quantity: Sequelize.INTEGER
+    },{
+        underscored: true,
+        freezeTableName: true,
+        tableName: 'order_item'
 });
 
 
@@ -104,6 +145,10 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
 app.get('/products',async  function (req, res) {
     console.log("username: ", process.env.EEP_DATABASE_ADMIN_NAME, "password: ", process.env.EEP_DATABASE_PASSWORD);
     res.json(await Product.findAll({}));
+});
+
+app.get('/product_categories', async function(req, res) {
+    res.json(await ProductCategory.findAll({}));
 });
 
 console.log('RESTful API server started on: ' + port);

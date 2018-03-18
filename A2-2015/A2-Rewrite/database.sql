@@ -179,10 +179,12 @@ INSERT INTO eep_operations.product (company_id, category, product_code, descript
   
 INSERT INTO eep_operations.order (id, created_at, customer_first_name, customer_last_name, customer_address, customer_phone, price, shipped_flag) VALUES 
 	(1, '2018-08-05 18:19:03', 'Paul', 'Fenton', '123 Blue Cheese Ave. The Moon', '222-333-4092', 370.00, false),
-    (2, '2018-08-05 18:19:03', 'Dario', 'Lecina', '1600 Pennsylvania Ave.', '222-323-4444', 47.50, false);
+    (2, '2018-08-05 18:19:03', 'Dario', 'Lecina', '1600 Pennsylvania Ave.', '222-323-4444', 47.50, false),
+    (3, '2018-08-05 18:19:03', 'Kayla', 'VanHaverbeck', '1 Route 66', '222-323-4433', 60.00, true);
     
 INSERT INTO eep_operations.order_item (order_id, product_company_id, product_category, product_code, quantity) VALUES 
 	(1, 'Leaf Tech', 'cultureboxes', 'PB001', 1),
     (1, 'Leaf Tech', 'cultureboxes', 'PB002', 1),
     (2, 'Leaf Tech', 'cultureboxes', 'PB002', 2),
-    (2, 'Leaf Tech', 'cultureboxes', 'PB003', 1);
+    (2, 'Leaf Tech', 'cultureboxes', 'PB003', 1),
+    (3, 'EPP', 'shrubs', 'SH001', 10);

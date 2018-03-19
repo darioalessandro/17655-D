@@ -29,6 +29,7 @@ class Inventory extends React.Component {
                        return <Typography key={key}>{p.company_id} {p.category} {p.product_code} {p.description} {p.price} </Typography>
                    })
             }
+
         </div>
     }
 }

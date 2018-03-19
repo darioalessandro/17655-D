@@ -60,7 +60,7 @@ app.get('/', function (req, res) {
     res.send('Backend is Alive')
 });
 
-app.get('/products',async  function (req, res) {
+app.get('/products', async function (req, res) {
     res.json(await Product.findAll({}));
 });
 

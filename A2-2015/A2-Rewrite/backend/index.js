@@ -5,7 +5,7 @@ const express = require('express'),
 const jsonParser = require('body-parser').json();
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('eep_operations', process.env.EEP_DATABASE_ADMIN_NAME, 'eep_password', {// process.env.EEP_DATABASE_PASSWORD, {
+const sequelize = new Sequelize('eep_operations', process.env.EEP_DATABASE_ADMIN_NAME, process.env.EEP_DATABASE_PASSWORD, {
     host: 'eep-operations.c0ucixdvk0wc.us-east-1.rds.amazonaws.com',
     port: 3306,
     dialect: 'mysql',

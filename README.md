@@ -55,8 +55,6 @@ yarn install
 yarn start
 ```
 
-
-
 Open http://localhost:3001
 
 You should see:
@@ -123,7 +121,7 @@ npm install react-google-login
 
 #### 3. Start the app
 
-Define ```REACT_APP_GOOGLE_OAUTH_TOKEN``` env var.
+Define env vars.
 
 ```bash
 export REACT_APP_GOOGLE_OAUTH_TOKEN=<token>

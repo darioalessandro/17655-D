@@ -132,6 +132,7 @@ class EEPSystem extends React.Component {
                         <ShippingIcon />
                     </ListItemIcon>
                     <ListItemText primary="Shipping" />
+                </ListItem>
                 <ListItem button onClick={() => this.setState({ section: SessionsSection})}>
                     <ListItemIcon>
                         <LockIcon />
@@ -232,7 +233,6 @@ class EEPSystem extends React.Component {
                 </CardContent>
             </Card>
         </div>;
-
         return (!this.state.authToken) ? auth : mainMenu;
     }
 

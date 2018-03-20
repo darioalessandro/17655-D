@@ -12,8 +12,10 @@ import MenuIcon from 'material-ui-icons/Menu';
 import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import OrdersIcon from 'material-ui-icons/LocalGroceryStore';
 import InventoryIcon from 'material-ui-icons/Work';
+import ShippingIcon from 'material-ui-icons/LocalShipping';
 import Orders from './Orders'
 import Inventory from './Inventory'
+import Shipping from './Shipping'
 
 const drawerWidth = 240;
 
@@ -55,6 +57,7 @@ const styles = theme => ({
 
 const InventorySection = 'Inventory';
 const OrdersSection = 'Orders';
+const ShippingSection = 'Shipping';
 
 class EEPSystem extends React.Component {
     state = {
@@ -84,6 +87,12 @@ class EEPSystem extends React.Component {
                         <InventoryIcon />
                     </ListItemIcon>
                     <ListItemText primary="Inventory" />
+                </ListItem>
+                <ListItem button onClick={() => this.setState({ section: ShippingSection})}>
+                    <ListItemIcon>
+                        <ShippingIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Shipping" />
                 </ListItem>
                 <Divider />
             </div>
@@ -135,7 +144,10 @@ class EEPSystem extends React.Component {
                 </Hidden>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    { (this.state.section === 'Inventory') ? <Inventory/> : <Orders/> }
+                    { (this.state.section === 'Inventory') ? <Inventory/> : null }
+                    { (this.state.section === 'Orders') ? <Orders/> : null }
+                    { (this.state.section === 'Shipping') ? <Shipping/> : null }
+
                 </main>
             </div>
         );

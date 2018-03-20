@@ -15,8 +15,6 @@ import Checkbox from 'material-ui/Checkbox';
 import Chip from 'material-ui/Chip';
 import Grid from 'material-ui/Grid';
 import Divider from 'material-ui/Divider';
-
-
 import Table, {
   TableBody,
   TableCell,
@@ -222,6 +220,8 @@ class Orders extends React.Component {
           <FormControl fullWidth className={classes.margin}>
             <InputLabel htmlFor="adornment-amount">Calculated Total Cost</InputLabel>
             <Input
+            disabled = "true"
+
               id="adornment-amount"
               value={this.state.amount}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}

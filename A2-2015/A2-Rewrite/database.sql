@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS `order`;
 DROP TABLE IF EXISTS `company`;
 DROP TABLE IF EXISTS `product_category`;
 
-
 CREATE TABLE `auth_logs` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(50) NOT NULL,
@@ -51,14 +50,14 @@ CREATE TABLE `product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `order` (
-  `id` int(11) NOT NULL,
-  `created_at` TIMESTAMP NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `customer_first_name` varchar(64) DEFAULT NULL,
   `customer_last_name` varchar(64) DEFAULT NULL,
   `customer_address` varchar(256) NOT NULL,
   `customer_phone` varchar(45) NOT NULL,
-  `price` float(10,2) NOT NULL,
   `shipped_flag` tinyint(4) NOT NULL,
+  `created_at` TIMESTAMP,
+  `updated_at` TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -68,6 +67,9 @@ CREATE TABLE `order_item` (
   `product_category` varchar(30) NOT NULL,
   `product_code` varchar(10) NOT NULL,
   `quantity` float(10,2) NOT NULL,
+  `unit_price` float(10,2) NOT NULL,
+  `created_at` TIMESTAMP,
+  `updated_at` TIMESTAMP,
   PRIMARY KEY (`order_id`, `product_company_id`, `product_category`, `product_code`),
   FOREIGN KEY (`order_id`) REFERENCES eep_operations.order(id),
   FOREIGN KEY (`product_company_id`, `product_category`, `product_code`) REFERENCES product(company_id, category, product_code)
@@ -77,7 +79,7 @@ CREATE TABLE `order_item` (
 
 /* Create companies */
 
-INSERT INTO eep_operations.company (id) VALUES ('EPP');
+INSERT INTO eep_operations.company (id) VALUES ('EEP');
 INSERT INTO eep_operations.company (id) VALUES ('Leaf Tech');
 
 /* Create categories */
@@ -127,61 +129,61 @@ INSERT INTO eep_operations.product (company_id, category, product_code, descript
   ('Leaf Tech','referencematerials','RF001','Handbook of Pharmaceutical Manufacturing Formulation',22,900.00);
 
 INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
-  ('EPP','seeds','MJ001','Madagascar Jasimine',100,22.00),
-  ('EPP','seeds','BP001','Butterfly Pea',100,26.00),
-  ('EPP','seeds','CS001','Camellia Senensis Tea',80,48.00),
-  ('EPP','seeds','CO001','Chocolate Orage Rudbeckia',120,28.00),
-  ('EPP','seeds','PP001','Purple Pitcher Plant',60,62.00),
-  ('EPP','seeds','AG001','American Ginsing',600,12.00),
-  ('EPP','seeds','QS001','Queen Sago',200,20.00),
-  ('EPP','seeds','AS001','Alpine Strawberry',400,16.00),
-  ('EPP','seeds','DG001','Dwarf Godetia',20,36.00),
-  ('EPP','seeds','BB001','Black Bat Plant',40,100.00),
-  ('EPP','seeds','MB001','Miniature Blue Popcorn',500,11.00),
-  ('EPP','seeds','BM002','Black Maui Orchids',200,150.00),
-  ('EPP','seeds','VF002','Venus Fly Trap',500,30.00),
-  ('EPP','seeds','BC003','Black Currant Whirl Hollyhock',300,23.00);
+  ('EEP','seeds','MJ001','Madagascar Jasimine',100,22.00),
+  ('EEP','seeds','BP001','Butterfly Pea',100,26.00),
+  ('EEP','seeds','CS001','Camellia Senensis Tea',80,48.00),
+  ('EEP','seeds','CO001','Chocolate Orage Rudbeckia',120,28.00),
+  ('EEP','seeds','PP001','Purple Pitcher Plant',60,62.00),
+  ('EEP','seeds','AG001','American Ginsing',600,12.00),
+  ('EEP','seeds','QS001','Queen Sago',200,20.00),
+  ('EEP','seeds','AS001','Alpine Strawberry',400,16.00),
+  ('EEP','seeds','DG001','Dwarf Godetia',20,36.00),
+  ('EEP','seeds','BB001','Black Bat Plant',40,100.00),
+  ('EEP','seeds','MB001','Miniature Blue Popcorn',500,11.00),
+  ('EEP','seeds','BM002','Black Maui Orchids',200,150.00),
+  ('EEP','seeds','VF002','Venus Fly Trap',500,30.00),
+  ('EEP','seeds','BC003','Black Currant Whirl Hollyhock',300,23.00);
 
 INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
-  ('EPP', 'shrubs','BC001','Blue Camphor',60,45.00),
-  ('EPP', 'shrubs','KP001','Kangaroo Paw',68,34.00),
-  ('EPP', 'shrubs','YB001','Yellow Buckeye',71,28.00),
-  ('EPP', 'shrubs','BB001','Butterfly Bush',36,81.00),
-  ('EPP', 'shrubs','BB002','Boxwood Bush',48,31.00),
-  ('EPP', 'shrubs','YC001','Yello Callicarpa',30,67.00),
-  ('EPP', 'shrubs','SB001','Smoke Bush',100,26.00),
-  ('EPP', 'shrubs','AF001','African Forsythia',80,38.00),
-  ('EPP', 'shrubs','BP001','Blue Paeonia',60,41.00),
-  ('EPP', 'shrubs','JB001','Juniper Berry',40,18.00),
-  ('EPP', 'shrubs','SH001','Saaz Hops',300,6.00),
-  ('EPP', 'shrubs','QS002','Queen Sago',30,60.00),
-  ('EPP', 'shrubs','GN003','Great Northern Camellias',120,97.00);
+  ('EEP', 'shrubs','BC001','Blue Camphor',60,45.00),
+  ('EEP', 'shrubs','KP001','Kangaroo Paw',68,34.00),
+  ('EEP', 'shrubs','YB001','Yellow Buckeye',71,28.00),
+  ('EEP', 'shrubs','BB001','Butterfly Bush',36,81.00),
+  ('EEP', 'shrubs','BB002','Boxwood Bush',48,31.00),
+  ('EEP', 'shrubs','YC001','Yello Callicarpa',30,67.00),
+  ('EEP', 'shrubs','SB001','Smoke Bush',100,26.00),
+  ('EEP', 'shrubs','AF001','African Forsythia',80,38.00),
+  ('EEP', 'shrubs','BP001','Blue Paeonia',60,41.00),
+  ('EEP', 'shrubs','JB001','Juniper Berry',40,18.00),
+  ('EEP', 'shrubs','SH001','Saaz Hops',300,6.00),
+  ('EEP', 'shrubs','QS002','Queen Sago',30,60.00),
+  ('EEP', 'shrubs','GN003','Great Northern Camellias',120,97.00);
 
 INSERT INTO eep_operations.product (company_id, category, product_code, description, quantity, price) VALUES
-  ('EPP','trees','EF001','Elephant Foot',6,800.00),
-  ('EPP','trees','BB001','Black Bamboo',30,100.00),
-  ('EPP','trees','BF001','Banyan Fig',13,325.00),
-  ('EPP','trees','RSM001','Red Snakebark Maple',200,98.00),
-  ('EPP','trees','BE001','Box Elder',400,36.00),
-  ('EPP','trees','JYM001','Japanese Yama Maple',500,42.00),
-  ('EPP','trees','EOM001','European Olive',62,225.00),
-  ('EPP','trees','YK001','Yemen Khat',21,625.00),
-  ('EPP','trees','AT001','Asian Teak',83,260.00),
-  ('EPP','trees','WW001','Worm Wood',91,115.00),
-  ('EPP','trees','LC001','Lemon Cypress',280,67.00),
-  ('EPP','trees','GB001','Ginkgo Biloba',75,80.00),
-  ('EPP','trees','CT001','Cigar Tree',10,83.00),
-  ('EPP','trees','AM002','Arden Maple',40,70.00),
-  ('EPP','trees','FL002','Finger Leaf Elm',16,75.00);
+  ('EEP','trees','EF001','Elephant Foot',6,800.00),
+  ('EEP','trees','BB001','Black Bamboo',30,100.00),
+  ('EEP','trees','BF001','Banyan Fig',13,325.00),
+  ('EEP','trees','RSM001','Red Snakebark Maple',200,98.00),
+  ('EEP','trees','BE001','Box Elder',400,36.00),
+  ('EEP','trees','JYM001','Japanese Yama Maple',500,42.00),
+  ('EEP','trees','EOM001','European Olive',62,225.00),
+  ('EEP','trees','YK001','Yemen Khat',21,625.00),
+  ('EEP','trees','AT001','Asian Teak',83,260.00),
+  ('EEP','trees','WW001','Worm Wood',91,115.00),
+  ('EEP','trees','LC001','Lemon Cypress',280,67.00),
+  ('EEP','trees','GB001','Ginkgo Biloba',75,80.00),
+  ('EEP','trees','CT001','Cigar Tree',10,83.00),
+  ('EEP','trees','AM002','Arden Maple',40,70.00),
+  ('EEP','trees','FL002','Finger Leaf Elm',16,75.00);
   
-INSERT INTO eep_operations.order (id, created_at, customer_first_name, customer_last_name, customer_address, customer_phone, price, shipped_flag) VALUES 
-	(1, '2018-08-05 18:19:03', 'Paul', 'Fenton', '123 Blue Cheese Ave. The Moon', '222-333-4092', 370.00, false),
-    	(2, '2018-08-05 18:19:03', 'Dario', 'Lecina', '1600 Pennsylvania Ave.', '222-323-4444', 47.50, false),
-    	(3, '2018-08-05 18:19:03', 'Kayla', 'VanHaverbeck', '1 Route 66', '222-323-4433', 60.00, true);
+INSERT INTO eep_operations.order (customer_first_name, customer_last_name, customer_address, customer_phone, shipped_flag) VALUES 
+	('Paul', 'Fenton', '123 Blue Cheese Ave. The Moon', '222-333-4092', false),
+    ('Dario', 'Lecina', '1600 Pennsylvania Ave.', '222-323-4444', false),
+    ('Kayla', 'VanHaverbeck', '1 Route 66', '222-323-4433', true);
     
-INSERT INTO eep_operations.order_item (order_id, product_company_id, product_category, product_code, quantity) VALUES 
-	(1, 'Leaf Tech', 'cultureboxes', 'PB001', 1),
-    	(1, 'Leaf Tech', 'cultureboxes', 'PB002', 1),
-    	(2, 'Leaf Tech', 'cultureboxes', 'PB002', 2),
-    	(2, 'Leaf Tech', 'cultureboxes', 'PB003', 1),
-    	(3, 'EPP', 'shrubs', 'SH001', 10);
+INSERT INTO eep_operations.order_item (order_id, product_company_id, product_category, product_code, quantity, unit_price) VALUES 
+	(1, 'Leaf Tech', 'cultureboxes', 'PB001', 1, 350.00),
+    (1, 'Leaf Tech', 'cultureboxes', 'PB002', 1, 20.00),
+    (2, 'Leaf Tech', 'cultureboxes', 'PB002', 2, 20.00),
+    (2, 'Leaf Tech', 'cultureboxes', 'PB003', 1, 7.50),
+    (3, 'EEP', 'shrubs', 'SH001', 10, 6.00);

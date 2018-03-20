@@ -71,6 +71,42 @@ If you get some weird mysql error, install mysql2 globally using:
 npm install -g mysql2
 ```
 
+### Using the Back-End API (Examples)
+
+Get all product categories: '<url>/product_categories'
+  
+Get product inventory for 'shrubs': '<url>/products?category_filter=shrubs'
+  
+Get all orders: '<url>/orders?show_pending=true&show_shipped=true'
+ 
+Get items for order #2: '<url>/order_item?order_id=2'
+  
+Create a new order: '<url>/create_order'
+  
+To create an order put the order details in the req.body:
+```
+{
+	"customer_first_name": "paul",
+	"customer_last_name": "fenton",
+	"customer_address": "slkdslkds",
+	"customer_phone": "slkdslk",
+	"items": [
+			{
+				"product_company_id": "EPP",
+				"product_category": "seeds",
+				"product_code": "AS001",
+				"quantity": 4
+			},
+			{
+				"product_company_id": "EPP",
+				"product_category": "trees",
+				"product_code": "CT001",
+				"quantity": 3
+			}
+		]
+}
+```
+
 ### Frontend
 
 #### 1. Install watchman
@@ -106,15 +142,6 @@ you should see the UI
 
 ![GitHub Logo](A2-2015/A2-Rewrite/imgs/menu.gif)
 
-### Using the Back-End API (Examples)
-
-Get all product categories: '<url>/product_categories'
-  
-Get product inventory for 'shrubs': '<url>/products?category_filter=shrubs'
-  
-Get all orders: '<url>/orders?show_pending=true&show_shipped=true'
- 
-Get items for order #2: '<url>/order_item?order_id=2'
 
 
 

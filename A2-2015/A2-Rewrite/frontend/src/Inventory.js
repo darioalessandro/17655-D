@@ -113,9 +113,7 @@ class Inventory extends React.Component {
           this.setState({ products: products });
       }
 
-      fetchProducts() {
-          return fetch(`http://localhost:3001/products`).then(result=>result.json());
-      }
+      
 
       handleToggle = value => () => {
         const { checked } = this.state;
@@ -141,6 +139,10 @@ class Inventory extends React.Component {
         this.setState({ [prop]: event.target.value });
       };
 
+
+    fetchProducts() {
+        return fetch(`${this.props.backendURL}/products`).then(result=>result.json());
+    }
 
     render() {
       const { classes, theme, onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;

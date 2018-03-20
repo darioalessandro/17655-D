@@ -150,6 +150,16 @@ class Orders extends React.Component {
 
 
 
+    async componentDidMount() {
+        const products = await this.fetchProducts();
+        console.log('got products ', JSON.stringify(products));
+        this.setState({ products: products });
+    }
+
+    fetchProducts() {
+        return fetch(`${this.props.backendURL}/products`).then(result=>result.json());
+    }
+
     render() {
       const { classes, theme, onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
       const { data, selected } = this.state;

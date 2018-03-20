@@ -15,12 +15,9 @@ import GoogleLogin from 'react-google-login';
 import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import OrdersIcon from 'material-ui-icons/LocalGroceryStore';
 import InventoryIcon from 'material-ui-icons/Work';
-import ShippingIcon from 'material-ui-icons/LocalShipping';
 import LockIcon from 'material-ui-icons/Lock';
-
 import Orders from './Orders'
 import Inventory from './Inventory'
-import Shipping from './Shipping'
 import SessionLogs from './SessionLogs'
 
 const drawerWidth = 240;
@@ -94,7 +91,6 @@ const styles = theme => ({
 
 const InventorySection = 'Inventory';
 const OrdersSection = 'Orders';
-const ShippingSection = 'Shipping';
 const SessionsSection = 'Session Logs';
 
 class EEPSystem extends React.Component {
@@ -127,11 +123,6 @@ class EEPSystem extends React.Component {
                     </ListItemIcon>
                     <ListItemText primary="Inventory" />
                 </ListItem>
-                <ListItem button onClick={() => this.setState({ section: ShippingSection})}>
-                    <ListItemIcon>
-                        <ShippingIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Shipping" />
                 <ListItem button onClick={() => this.setState({ section: SessionsSection})}>
                     <ListItemIcon>
                         <LockIcon />
@@ -208,9 +199,6 @@ class EEPSystem extends React.Component {
                 </Hidden>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    { (this.state.section === 'Inventory') ? <Inventory/> : null }
-                    { (this.state.section === 'Orders') ? <Orders/> : null }
-                    { (this.state.section === 'Shipping') ? <Shipping/> : null }
                     { selectedSession}
                 </main>
             </div>

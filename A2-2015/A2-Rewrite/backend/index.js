@@ -205,12 +205,12 @@ app.get("/product_categories", async function(req, res) {
 });
 
 app.get("/orders", async function(req, res) {
-  var showPending = "false" != req.param("show_pending", true);
-  var showShipped = "false" != req.param("show_shipped", true);
+  var showPending = "false" !== req.param("show_pending", true);
+  var showShipped = "false" !== req.param("show_shipped", true);
 
   if (!showPending && !showShipped) {
     return res.json([]);
-  } else if (showPending != showShipped) {
+  } else if (showPending !== showShipped) {
     res.json(
       await Orders.findAll({
         where: {
@@ -264,7 +264,6 @@ app.post("/create_order", jsonParser, async function(req, res) {
           unit_price: 1
         }).save();
       });
-      return;
     });
   await res.send("saved order!");
 });

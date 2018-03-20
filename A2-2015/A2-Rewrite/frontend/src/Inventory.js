@@ -159,7 +159,6 @@ class Inventory extends React.Component {
           <InputLabel
           htmlFor="productCategory"
           className={classes.textField}
-          margin="normal"
           >Product Category</InputLabel>
           <Select
             value={this.state.category}
@@ -169,7 +168,6 @@ class Inventory extends React.Component {
               id: 'productCategory',
             }}
             className={classes.textField}
-            margin="normal"
           >
             <MenuItem value={'trees'}>Trees</MenuItem>
             <MenuItem value={'seeds'}>Seeds</MenuItem>
@@ -187,38 +185,34 @@ class Inventory extends React.Component {
               id="required"
               label="Product ID"
               className={classes.textField}
-              margin="normal"
             />
             <TextField
               required
               id="required"
               label="Quantity"
               className={classes.textField}
-              margin="normal" />
+              />
             <TextField
               required
               id="required"
               label="Product Desc"
               className={classes.textField}
-              margin="normal"
             />
             <InputLabel
             htmlFor="adornment-amount"
             className={classes.textField}
-            margin="normal"
             >Retail Price *</InputLabel>
             <Input
             required
               id="adornment-amount"
               className={classes.textField}
-              margin="normal"
               value={this.state.amount}
               onChange={this.handleAmount('amount')}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
             />
 
           </form>
-          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth="true">Add Item</Button>
+          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth>Add Item</Button>
           </Paper>
         </Grid>
         <Grid item xs={8}>

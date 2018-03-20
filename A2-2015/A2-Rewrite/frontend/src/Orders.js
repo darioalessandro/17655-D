@@ -96,31 +96,58 @@ function createData(productID, productDesc, productPrice, productStock) {
 }
 
 const tableData = [
-  createData('12345', 'test1', '$4.00', 24),
-  createData('23456', 'test2', '$8.00', 37),
-  createData('34567', 'test3', '$16.00', 24),
+  createData('12345', 'test1', '4.00', 24),
+  createData('23456', 'test2', '8.00', 37),
+  createData('34567', 'test3', '16.00', 24),
 ];
 
 class Orders extends React.Component {
-    state = {
-      checked: [0],
+  constructor(props) {
+      super();
+      this.state={
+        products:[],
+        checked: [0],
+        category: '',
+        firstName: '',
+        lastName: '',
+        address: '',
+        phoneNumber: '',
+        calculateCost: [0],
+        amount: 0,
       };
+  }
 
-      handleToggle = value => () => {
+      handleToggle = id => () => {
         const { checked } = this.state;
-        const currentIndex = checked.indexOf(value);
+        const { calculateCost } = this.state;
+        const { amount } = this.state;
+
+        const currentIndex = checked.indexOf(id);
         const newChecked = [...checked];
+        const newCost = [...calculateCost];
 
         if (currentIndex === -1) {
-          newChecked.push(value);
+          newChecked.push(id);
+          newCost.push(this.value);
         } else {
           newChecked.splice(currentIndex, 1);
         }
 
         this.setState({
           checked: newChecked,
+          amount: this.value,
         });
       };
+
+      handleChange(event) {
+        this.setState({firstName: event.target.value});
+      }
+
+      submitOrder = () => {
+          alert("clicked");
+      };
+
+
 
 
     render() {
@@ -137,33 +164,37 @@ class Orders extends React.Component {
           <Typography variant="subheading" gutterBottom>Customer Information</Typography>
 
         <form className={classes.container} noValidate autoComplete="off">
+
             <TextField
               required
-              id="required"
+              id="firstName"
               label="First Name"
               className={classes.textField}
-              margin="normal"
+              onChange={this.handleChange}
             />
             <TextField
               required
               id="required"
               label="Last Name"
               className={classes.textField}
-              margin="normal"
+              value={this.state.lastName}
+              onChange={this.handleChange}
             />
             <TextField
               required
               id="required"
               label="Address"
               className={classes.textField}
-              margin="normal"
+              value={this.state.address}
+              onChange={this.handleChange}
             />
             <TextField
               required
               id="required"
               label="Phone Number"
               className={classes.textField}
-              margin="normal"
+              value={this.state.phoneNumber}
+              onChange={this.handleChange}
             />
 
           </form>
@@ -204,6 +235,7 @@ class Orders extends React.Component {
                     <Checkbox
                       onChange={this.handleToggle(n.id)}
                       checked={this.state.checked.indexOf(n.id) !== -1}
+                      value={n.productPrice}
                     />
                     </TableCell>
                       <TableCell>{n.productID}</TableCell>
@@ -220,15 +252,14 @@ class Orders extends React.Component {
           <FormControl fullWidth className={classes.margin}>
             <InputLabel htmlFor="adornment-amount">Calculated Total Cost</InputLabel>
             <Input
-            disabled = "true"
-
+              disabled
               id="adornment-amount"
               value={this.state.amount}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
             />
           </FormControl>
           </Paper>
-          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth="true">
+          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth   onClick={this.submitOrder}>
             Submit Order
           </Button>
         </Grid>

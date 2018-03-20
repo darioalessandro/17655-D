@@ -67,20 +67,18 @@ const AuthLogs = sequelize.define('auth_logs', {
 const Orders = sequelize.define('order', {
         id: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
-        created_at: Sequelize.TIME,
         customer_first_name: Sequelize.STRING,
         customer_last_name: Sequelize.STRING,
         customer_address: Sequelize.STRING,
         customer_phone: Sequelize.STRING,
-        price: Sequelize.DOUBLE,
         shipped_flag: Sequelize.BOOLEAN
     },{
         underscored: true,
         freezeTableName: true,
-        tableName: 'order',
-        timestamps: false
+        tableName: 'order'
 });
 
 const OrderItems = sequelize.define('order_item', {
@@ -100,12 +98,12 @@ const OrderItems = sequelize.define('order_item', {
             type: Sequelize.STRING,
             primaryKey: true
         },
-        quantity: Sequelize.INTEGER
+        quantity: Sequelize.INTEGER,
+        unit_price: Sequelize.DOUBLE
     },{
         underscored: true,
         freezeTableName: true,
-        tableName: 'order_item',
-        timestamps: false
+        tableName: 'order_item'
 });
 
 
@@ -149,7 +147,7 @@ app.post('/auth/log/:type',jsonParser,async function (req, res) {
             await AuthLogs.build({
                 name: req.body.name,
                 email: req.body.email,
-                token:req.body.token ,
+                token: req.body.token ,
                 event: 'logout',
             }).save();
             await res.send("logout success");
@@ -207,6 +205,35 @@ app.get('/order_item', async  function (req, res) {
     } else {
         return res.json([]);
     }   
+});
+
+app.post('/create_order',jsonParser,async function (req, res) {
+    console.log("creating order record!");
+    if (!req.body) return res.sendStatus(400);
+    
+    //create the order record
+    await Orders.build({
+        customer_first_name: req.body.customer_first_name,
+        customer_last_name: req.body.customer_last_name,
+        customer_address: req.body.customer_address,
+        customer_phone: req.body.customer_phone,
+        shipped_flag: false //start out a new order as not shipped
+    }).save().then(neworder => {
+         // create the associated order_item records
+        req.body.items.map(item => {
+            return OrderItems.build({
+                order_id: neworder.id,
+                product_company_id: item.product_company_id,
+                product_category: item.product_category,
+                product_code: item.product_code,
+                quantity: item.quantity,
+                unit_price: 1,
+            }).save();
+        });
+        return;
+    });
+    await res.send("saved order!");
+
 });
 
 console.log('RESTful API server started on: ' + port);

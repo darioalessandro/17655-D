@@ -192,7 +192,7 @@ class Shipping extends React.Component {
                    })}
             </TableBody>
           </Table>
-          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth="true">Select Pending Order</Button>
+          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth>Select Pending Order</Button>
           </Paper>
         </Grid>
         <Grid item xs={6}>
@@ -239,7 +239,7 @@ class Shipping extends React.Component {
                    })}
             </TableBody>
           </Table>
-          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth="true">Select Shipped Order</Button>
+          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth>Select Shipped Order</Button>
           </Paper>
         </Grid>
 
@@ -252,13 +252,11 @@ class Shipping extends React.Component {
 
                 label="First Name"
                 className={classes.textField}
-                margin="normal"
                 disabled = "true"
               />
               <TextField
                 label="Last Name"
                 className={classes.textField}
-                margin="normal"
                 disabled = "true"
 
               />
@@ -266,21 +264,18 @@ class Shipping extends React.Component {
               <TextField
                 label="Phone Number"
                 className={classes.textField}
-                margin="normal"
                 disabled = "true"
 
               />
               <TextField
                 label="Order Date"
                 className={classes.textField}
-                margin="normal"
                 disabled = "true"
 
               />
 
               <TextField
                 label="Address"
-                margin="normal"
                 disabled = "true"
                 multiline
                 fullWidth
@@ -328,12 +323,11 @@ class Shipping extends React.Component {
           </Table>
           <TextField
             label="Messages"
-            margin="normal"
             multiline
             fullWidth
             rowsMax="4"
           />
-          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth="true">Mark As Shipped</Button>
+          <Button variant="raised" color="primary" className={classes.fullbutton} fullWidth>Mark As Shipped</Button>
           </Paper>
         </Grid>
       </Grid>

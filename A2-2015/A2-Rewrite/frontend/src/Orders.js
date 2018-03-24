@@ -3,6 +3,9 @@ import Typography from "material-ui/Typography";
 import { withStyles } from "material-ui/styles";
 import Button from "material-ui/Button";
 import TextField from "material-ui/TextField";
+import Select from "material-ui/Select";
+import MenuItem from "material-ui/Menu/MenuItem";
+//import RaisedButton from 'material-ui/RaisedButton';
 
 import Input, { InputAdornment, InputLabel } from "material-ui/Input";
 import { FormControl } from "material-ui/Form";
@@ -36,6 +39,10 @@ const styles = theme => ({
     minWidth: 320,
     maxWidth: 500
   },
+  ordersContainer: {
+    height: "100%",
+    overflowY: "scroll"
+  },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -62,8 +69,8 @@ const styles = theme => ({
   }
 });
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
+const ITEM_HEIGHT = 24;
+const ITEM_PADDING_TOP = 4;
 const MenuProps = {
   PaperProps: {
     style: {
@@ -127,21 +134,37 @@ class Orders extends React.Component {
     };
   }
 
-  handleChange(event) {
-    this.setState({ firstName: event.target.value });
-  }
-
   async componentDidMount() {
-    const products = await this.fetchProducts();
-    console.log("got products ", JSON.stringify(products));
-    this.setState({ products: products });
-  }
+    //const products = await this.fetchAllProducts();
+    //this.setState({ products: products });
+  };
 
-  fetchProducts() {
+  fetchFilteredProducts(event) {
+    return fetch(`${this.props.backendURL}/products?category_filter=${encodeURIComponent(event)}`).then(result =>
+      result.json()
+    );
+  };
+
+  fetchAllProducts() {
     return fetch(`${this.props.backendURL}/products`).then(result =>
       result.json()
     );
-  }
+  };
+
+  handleChange(event) {
+    this.setState({ firstName: event.target.value });
+  };
+
+  async productCategoryChange(event) {
+   //const products = this.fetchAllProducts();//this.fetchFilteredProducts(event.target.value);
+   this.setState({ category: event.target.value });
+   const products = await fetch(`${this.props.backendURL}/products?category_filter=${encodeURIComponent(event.target.value)}`).then(result =>
+    result.json()
+    );
+
+    console.log("goit filtered products", products);
+   this.setState({products: products});
+  };
 
   render() {
     const {
@@ -156,7 +179,7 @@ class Orders extends React.Component {
     const { data, selected } = this.state;
 
     return (
-      <div className={classes.root}>
+      <div style={styles.ordersContainer} className={classes.root}>
         <Typography variant="headline" gutterBottom>
           Orders
         </Typography>
@@ -205,56 +228,51 @@ class Orders extends React.Component {
           <Grid item xs={8}>
             <Paper className={classes.paper}>
               <Typography variant="subheading" gutterBottom>
-                Choose your Inventory:{" "}
+                Product Category:{" "}
               </Typography>
 
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.button}
-              >
-                Trees
-              </Button>
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.button}
-              >
-                Seeds
-              </Button>
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.button}
-              >
-                Shrubs
-              </Button>
+              <Select
+                  value={this.state.category}
+                  onChange={this.productCategoryChange.bind(this)}
+                  inputProps={{
+                    name: "category",
+                    id: "productCategory"
+                  }}
+                  className={classes.textField}
+                >
+                  <MenuItem value={"trees"}>Trees</MenuItem>
+                  <MenuItem value={"seeds"}>Seeds</MenuItem>
+                  <MenuItem value={"shrubs"}>Shrubs</MenuItem>
+                  <MenuItem value={"cultureboxes"}>Culture Boxes</MenuItem>
+                  <MenuItem value={"genomics"}>Genomics</MenuItem>
+                  <MenuItem value={"referencematerials"}>Reference Materials</MenuItem>
+              </Select>
 
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox" />
-                    <TableCell>Product ID</TableCell>
+                    <TableCell>Product Code</TableCell>
                     <TableCell>Product Desc</TableCell>
                     <TableCell>Price ($)</TableCell>
                     <TableCell numeric>Items In Stock</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {tableData.map(n => {
+                  {this.state.products.map(n => {
                     return (
-                      <TableRow hover key={n.id}>
+                      <TableRow hover key={n.product_code}>
                         <TableCell padding="checkbox">
                           <Checkbox
-                            onChange={this.handleToggle(n.id)}
-                            checked={this.state.checked.indexOf(n.id) !== -1}
+                            onChange={this.handleToggle(n.product_code)}
+                            checked={this.state.checked.indexOf(n.product_code) !== -1}
                             value={n.productPrice}
                           />
                         </TableCell>
-                        <TableCell>{n.productID}</TableCell>
-                        <TableCell numeric>{n.productDesc}</TableCell>
-                        <TableCell numeric>{n.productPrice}</TableCell>
-                        <TableCell numeric>{n.productStock}</TableCell>
+                        <TableCell>{n.product_code}</TableCell>
+                        <TableCell>{n.description}</TableCell>
+                        <TableCell numeric>{n.price}</TableCell>
+                        <TableCell numeric>{n.quantity}</TableCell>
                       </TableRow>
                     );
                   })}

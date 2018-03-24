@@ -39,10 +39,6 @@ const styles = theme => ({
     minWidth: 320,
     maxWidth: 500
   },
-  ordersContainer: {
-    height: "100%",
-    overflowY: "scroll"
-  },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -66,11 +62,15 @@ const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 2,
     color: theme.palette.text.secondary
+  },
+  tableRowStyle: {
+    height: "10px",
+    padding: "0px"
   }
 });
 
-const ITEM_HEIGHT = 24;
-const ITEM_PADDING_TOP = 4;
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   PaperProps: {
     style: {
@@ -135,21 +135,15 @@ class Orders extends React.Component {
   }
 
   async componentDidMount() {
-    //const products = await this.fetchAllProducts();
-    //this.setState({ products: products });
+    // wait until user selects an initial category
   };
 
-  fetchFilteredProducts(event) {
-    return fetch(`${this.props.backendURL}/products?category_filter=${encodeURIComponent(event)}`).then(result =>
+  fetchProducts(filter) {
+    return fetch(`${this.props.backendURL}/products?category_filter=${encodeURIComponent(filter)}`).then(result =>
       result.json()
     );
   };
 
-  fetchAllProducts() {
-    return fetch(`${this.props.backendURL}/products`).then(result =>
-      result.json()
-    );
-  };
 
   handleChange(event) {
     this.setState({ firstName: event.target.value });
@@ -158,15 +152,19 @@ class Orders extends React.Component {
   async productCategoryChange(event) {
    //const products = this.fetchAllProducts();//this.fetchFilteredProducts(event.target.value);
    this.setState({ category: event.target.value });
-   const products = await fetch(`${this.props.backendURL}/products?category_filter=${encodeURIComponent(event.target.value)}`).then(result =>
-    result.json()
-    );
-
-    console.log("goit filtered products", products);
-   this.setState({products: products});
+   this.setState({products: await this.fetchProducts(event.target.value)});
   };
 
+  async addToOrder() {
+    console.log("ADD TO ORDER STUB TRIGGERED");
+  }
+
+  async sumbitOrder() {
+    console.log("SUBMIT ORDER STUB TRIGGERED");
+  }
+
   render() {
+    
     const {
       classes,
       theme,
@@ -179,7 +177,7 @@ class Orders extends React.Component {
     const { data, selected } = this.state;
 
     return (
-      <div style={styles.ordersContainer} className={classes.root}>
+      <div className={classes.root}>
         <Typography variant="headline" gutterBottom>
           Orders
         </Typography>
@@ -250,7 +248,7 @@ class Orders extends React.Component {
 
               <Table className={classes.table}>
                 <TableHead>
-                  <TableRow>
+                  <TableRow style={styles.tableRowStyle}>
                     <TableCell padding="checkbox" />
                     <TableCell>Product Code</TableCell>
                     <TableCell>Product Desc</TableCell>
@@ -279,30 +277,77 @@ class Orders extends React.Component {
                 </TableBody>
               </Table>
 
-              <Divider light />
-              <FormControl fullWidth className={classes.margin}>
-                <InputLabel htmlFor="adornment-amount">
-                  Calculated Total Cost
-                </InputLabel>
-                <Input
-                  disabled
-                  id="adornment-amount"
-                  value={this.state.amount}
-                  startAdornment={
-                    <InputAdornment position="start">$</InputAdornment>
-                  }
-                />
-              </FormControl>
+              
+              
             </Paper>
             <Button
               variant="raised"
               color="primary"
               className={classes.fullbutton}
               fullWidth
-              onClick={this.submitOrder}
+              onClick={this.addToOrder.bind(this)}
             >
-              Submit Order
+              Add to Order
             </Button>
+            <Paper>
+              <Table className={classes.table}>
+                <TableHead>
+                  <TableRow style={styles.tableRowStyle}>
+                    <TableCell padding="checkbox" />
+                    <TableCell>Product Code</TableCell>
+                    <TableCell>Product Desc</TableCell>
+                    <TableCell>Price ($)</TableCell>
+                    <TableCell numeric>Items In Stock</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.products.map(n => {
+                    return (
+                      <TableRow hover key={n.product_code}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            onChange={this.handleToggle(n.product_code)}
+                            checked={this.state.checked.indexOf(n.product_code) !== -1}
+                            value={n.productPrice}
+                          />
+                        </TableCell>
+                        <TableCell>{n.product_code}</TableCell>
+                        <TableCell>{n.description}</TableCell>
+                        <TableCell numeric>{n.price}</TableCell>
+                        <TableCell numeric>{n.quantity}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Paper>
+            <Paper>
+
+
+              <FormControl fullWidth className={classes.margin}>
+                  <InputLabel htmlFor="adornment-amount">
+                    Calculated Total Cost
+                  </InputLabel>
+                  <Input
+                    disabled
+                    id="adornment-amount"
+                    value={this.state.amount}
+                    startAdornment={
+                      <InputAdornment position="start">$</InputAdornment>
+                    }
+                  />
+              </FormControl>
+              <Divider light />
+              <Button
+                variant="raised"
+                color="primary"
+                className={classes.fullbutton}
+                fullWidth
+                onClick={this.submitOrder.bind(this)}
+              >
+                Submit Order
+              </Button>
+            </Paper>
           </Grid>
         </Grid>
       </div>

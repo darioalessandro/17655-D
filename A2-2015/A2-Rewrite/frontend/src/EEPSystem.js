@@ -168,7 +168,7 @@ class EEPSystem extends React.Component {
         selectedSession = <SessionLogs backendURL={backendURL} />;
         break;
       default:
-        selectedSession = <Typography> Unknown Section </Typography>;
+        selectedSession = <Shipping backendURL={backendURL} />;
     }
 
     const mainMenu = (

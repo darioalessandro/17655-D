@@ -1,5 +1,23 @@
 import React from "react";
-import Typography from "material-ui/Typography";
+import { withStyles } from "material-ui/styles";
+import Table, {
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow
+} from "material-ui/Table";
+import Paper from "material-ui/Paper";
+
+const styles = theme => ({
+  root: {
+    width: "100%",
+    marginTop: theme.spacing.unit * 3,
+    overflowX: "auto"
+  },
+  table: {
+    minWidth: 700
+  }
+});
 
 class SessionLogs extends React.Component {
   constructor(props) {
@@ -20,26 +38,35 @@ class SessionLogs extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
+
     return (
-      <div>
-        <Typography>Session Logs</Typography>
-        {this.state.products.length === 0 ? (
-          <Typography>
-            No login data found! this is most likely a db error
-          </Typography>
-        ) : (
-          this.state.products.map(p => {
-            const key = `${p.email}${p.id}`;
-            return (
-              <Typography key={key}>
-                {p.email} {p.name} {p.created_at} {p.event}{" "}
-              </Typography>
-            );
-          })
-        )}
-      </div>
+      <Paper className={classes.root}>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>email</TableCell>
+              <TableCell>name</TableCell>
+              <TableCell date>date</TableCell>
+              <TableCell>event</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.products.map(n => {
+              return (
+                <TableRow key={n.id}>
+                  <TableCell>{n.email}</TableCell>
+                  <TableCell>{n.name}</TableCell>
+                  <TableCell date>{n.created_at}</TableCell>
+                  <TableCell>{n.event}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Paper>
     );
   }
 }
 
-export default SessionLogs;
+export default withStyles(styles)(SessionLogs);

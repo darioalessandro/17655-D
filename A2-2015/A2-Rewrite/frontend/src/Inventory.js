@@ -19,8 +19,7 @@ import Paper from "material-ui/Paper";
 
 const styles = theme => ({
   button: {
-    margin: theme.spacing.unit,
-    margin: 10
+    margin: theme.spacing.unit
   },
   fullbutton: {
     margin: theme.spacing.unit
@@ -34,6 +33,9 @@ const styles = theme => ({
     margin: 40,
     minWidth: 320,
     maxWidth: 500
+  },
+  table: {
+    width: "100%"
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -214,7 +216,6 @@ class Inventory extends React.Component {
               <Typography variant="subheading" gutterBottom>
                 Current Inventory:{" "}
               </Typography>
-
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow>

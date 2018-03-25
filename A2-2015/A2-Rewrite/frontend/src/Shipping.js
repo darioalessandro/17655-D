@@ -100,9 +100,9 @@ class Shipping extends React.Component {
   };
 
   handleClick = async (event, id, first, last, address, phone, date, shipped) => {
-    this.setState({ selectedOrder: id });
     const orderDetails = await this.fetchOrderDetails(id);
     this.setState({
+      selectedOrder: id,
       orderFirst: first,
       orderLast: last,
       orderAddress: address,
@@ -114,6 +114,13 @@ class Shipping extends React.Component {
   };
 
   isSelected = id => this.state.selectedOrder == id;
+
+  async markAsShipped() {
+    const a = await this.updateOrderShipped(this.state.selectedOrder);
+    this.setState({orderShipped: true});
+    const orders = await this.fetchOrders(this.state.showPending, this.state.showShipped);
+    this.setState({orders:orders});
+  }
 
 
   constructor(props) {
@@ -139,17 +146,21 @@ class Shipping extends React.Component {
     // do nothing for now
 
     const orders = await this.fetchOrders(this.state.showPending, this.state.showShipped);
-    console.log("got orders", orders);
     this.setState({orders:orders});
   }
 
   fetchOrders(showPending, showShipped) {
+    console.log("fetching ...");
     return fetch(`${this.props.backendURL}/orders?show_pending=${encodeURIComponent(showPending)}&show_shipped=${encodeURIComponent(showShipped)}`).then(result =>
       result.json());
   }
   fetchOrderDetails(orderId) {
     return fetch(`${this.props.backendURL}/order_item?order_id=${encodeURIComponent(orderId)}`).then(result =>
       result.json());
+  }
+  updateOrderShipped(orderId) {
+    return fetch(`${this.props.backendURL}/mark_order_shipped?order_id=${encodeURIComponent(orderId)}`).then(result =>
+      result);
   }
 
   async toggleShowPending() {
@@ -342,6 +353,7 @@ class Shipping extends React.Component {
                 color="primary"
                 disabled={isShipped}
                 className={classes.fullbutton}
+                onClick={this.markAsShipped.bind(this)}
                 fullWidth
               >
                 Mark As Shipped

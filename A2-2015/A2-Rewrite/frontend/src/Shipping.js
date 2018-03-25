@@ -4,7 +4,7 @@ import { withStyles } from "material-ui/styles";
 import Button from "material-ui/Button";
 import TextField from "material-ui/TextField";
 import Checkbox from "material-ui/Checkbox";
-import { FormGroup, FormControlLabel } from 'material-ui/Form';
+import { FormGroup, FormControlLabel } from "material-ui/Form";
 import Grid from "material-ui/Grid";
 import Table, {
   TableBody,
@@ -51,7 +51,8 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing.unit * 2,
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
+    overflowX: "auto"
   }
 });
 
@@ -92,14 +93,23 @@ class Shipping extends React.Component {
 
   handleChange = name => event => {
     this.setState({
-      [name]: event.target.value,
+      [name]: event.target.value
     });
   };
   handleAmount = prop => event => {
     this.setState({ [prop]: event.target.value });
   };
 
-  handleClick = async (event, id, first, last, address, phone, date, shipped) => {
+  handleClick = async (
+    event,
+    id,
+    first,
+    last,
+    address,
+    phone,
+    date,
+    shipped
+  ) => {
     const orderDetails = await this.fetchOrderDetails(id);
     this.setState({
       selectedOrder: id,
@@ -117,11 +127,13 @@ class Shipping extends React.Component {
 
   async markAsShipped() {
     const a = await this.updateOrderShipped(this.state.selectedOrder);
-    this.setState({orderShipped: true});
-    const orders = await this.fetchOrders(this.state.showPending, this.state.showShipped);
-    this.setState({orders:orders});
+    this.setState({ orderShipped: true });
+    const orders = await this.fetchOrders(
+      this.state.showPending,
+      this.state.showShipped
+    );
+    this.setState({ orders: orders });
   }
-
 
   constructor(props) {
     super();
@@ -145,33 +157,51 @@ class Shipping extends React.Component {
   async componentDidMount() {
     // do nothing for now
 
-    const orders = await this.fetchOrders(this.state.showPending, this.state.showShipped);
-    this.setState({orders:orders});
+    const orders = await this.fetchOrders(
+      this.state.showPending,
+      this.state.showShipped
+    );
+    this.setState({ orders: orders });
   }
 
   fetchOrders(showPending, showShipped) {
     console.log("fetching ...");
-    return fetch(`${this.props.backendURL}/orders?show_pending=${encodeURIComponent(showPending)}&show_shipped=${encodeURIComponent(showShipped)}`).then(result =>
-      result.json());
+    return fetch(
+      `${this.props.backendURL}/orders?show_pending=${encodeURIComponent(
+        showPending
+      )}&show_shipped=${encodeURIComponent(showShipped)}`
+    ).then(result => result.json());
   }
   fetchOrderDetails(orderId) {
-    return fetch(`${this.props.backendURL}/order_item?order_id=${encodeURIComponent(orderId)}`).then(result =>
-      result.json());
+    return fetch(
+      `${this.props.backendURL}/order_item?order_id=${encodeURIComponent(
+        orderId
+      )}`
+    ).then(result => result.json());
   }
   updateOrderShipped(orderId) {
-    return fetch(`${this.props.backendURL}/mark_order_shipped?order_id=${encodeURIComponent(orderId)}`).then(result =>
-      result);
+    return fetch(
+      `${
+        this.props.backendURL
+      }/mark_order_shipped?order_id=${encodeURIComponent(orderId)}`
+    ).then(result => result);
   }
 
   async toggleShowPending() {
-    this.setState({showPending: !this.state.showPending});
-    const orders = await this.fetchOrders(!this.state.showPending, this.state.showShipped);
-    this.setState({orders:orders});
+    this.setState({ showPending: !this.state.showPending });
+    const orders = await this.fetchOrders(
+      !this.state.showPending,
+      this.state.showShipped
+    );
+    this.setState({ orders: orders });
   }
   async toggleShowShipped() {
-    this.setState({showShipped: !this.state.showShipped});
-    const orders = await this.fetchOrders(this.state.showPending, !this.state.showShipped);
-    this.setState({orders:orders});
+    this.setState({ showShipped: !this.state.showShipped });
+    const orders = await this.fetchOrders(
+      this.state.showPending,
+      !this.state.showShipped
+    );
+    this.setState({ orders: orders });
   }
 
   render() {
@@ -185,7 +215,7 @@ class Shipping extends React.Component {
       rowCount
     } = this.props;
     const { data, selected } = this.state;
-    const isShipped = (this.state.orderShipped == true);
+    const isShipped = this.state.orderShipped == true;
     return (
       <div className={classes.root}>
         <Typography variant="headline" gutterBottom>
@@ -234,21 +264,29 @@ class Shipping extends React.Component {
                 <TableBody>
                   {this.state.orders.length === 0 ? (
                     <TableRow hover>
-                      <TableCell colSpan={4}>
-                      </TableCell>
+                      <TableCell colSpan={4} />
                     </TableRow>
                   ) : (
                     this.state.orders.map(o => {
                       const isSelected = this.isSelected(o.id);
                       return (
-                        <TableRow hover key={o.id}
-                          onClick={event => this.handleClick(event, o.id, o.customer_first_name,
-                                                                          o.customer_last_name,
-                                                                          o.customer_address,
-                                                                          o.customer_phone,
-                                                                          o.created_at,
-                                                                          o.shipped_flag)}
-                          selected={isSelected}>
+                        <TableRow
+                          hover
+                          key={o.id}
+                          onClick={event =>
+                            this.handleClick(
+                              event,
+                              o.id,
+                              o.customer_first_name,
+                              o.customer_last_name,
+                              o.customer_address,
+                              o.customer_phone,
+                              o.created_at,
+                              o.shipped_flag
+                            )
+                          }
+                          selected={isSelected}
+                        >
                           <TableCell>{o.id}</TableCell>
                           <TableCell numeric>{o.created_at}</TableCell>
                           <TableCell numeric>{o.customer_first_name}</TableCell>
@@ -302,7 +340,8 @@ class Shipping extends React.Component {
                   value={this.state.orderPhone}
                   disabled="true"
                 />
-                <TextField numeric
+                <TextField
+                  numeric
                   label="Order Date"
                   className={classes.textField}
                   value={this.state.orderDate}
@@ -329,14 +368,13 @@ class Shipping extends React.Component {
                 <TableBody>
                   {this.state.orderItems.length === 0 ? (
                     <TableRow hover>
-                      <TableCell colSpan={4}>
-                      </TableCell>
+                      <TableCell colSpan={4} />
                     </TableRow>
                   ) : (
                     this.state.orderItems.map(o => {
                       const key = `${o.order_id}-${o.product_company_id}-${
-                        o.product_category}-${o.product_code
-                      }`;
+                        o.product_category
+                      }-${o.product_code}`;
                       return (
                         <TableRow hover key={key}>
                           <TableCell>{o.product_category}</TableCell>

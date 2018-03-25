@@ -6,8 +6,8 @@ import IconButton from "material-ui/IconButton";
 import TextField from "material-ui/TextField";
 import Select from "material-ui/Select";
 import MenuItem from "material-ui/Menu/MenuItem";
-import AddShoppingCartIcon from 'material-ui-icons/Add';
-import Icon from 'material-ui/Icon';
+import AddShoppingCartIcon from "material-ui-icons/Add";
+import Icon from "material-ui/Icon";
 //import RaisedButton from 'material-ui/RaisedButton';
 
 import Input, { InputAdornment, InputLabel } from "material-ui/Input";
@@ -67,7 +67,8 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing.unit * 2,
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
+    overflowX: "auto"
   },
   tableRowStyle: {
     height: "10px",
@@ -134,38 +135,41 @@ class Orders extends React.Component {
   async componentDidMount() {
     // wait until user selects an initial category
 
-    this.setState({ category: 'cultureboxes'});
-    const products = await this.fetchProducts('cultureboxes');
-   this.setState({products: products.map(o => 
-                                          {
-                                            o.order_quantity = 0;
-                                            return o;
-                                          })
-                                        });
-  };
+    this.setState({ category: "cultureboxes" });
+    const products = await this.fetchProducts("cultureboxes");
+    this.setState({
+      products: products.map(o => {
+        o.order_quantity = 0;
+        return o;
+      })
+    });
+  }
 
   fetchProducts(filter) {
-    return fetch(`${this.props.backendURL}/products?category_filter=${encodeURIComponent(filter)}`).then(result =>
-      result.json());
-  };
+    return fetch(
+      `${this.props.backendURL}/products?category_filter=${encodeURIComponent(
+        filter
+      )}`
+    ).then(result => result.json());
+  }
 
   postOrder(order) {
     console.log("posting order", order);
     return fetch(`${this.props.backendURL}/create_order`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({order})
-    })
+      body: JSON.stringify({ order })
+    });
   }
 
   incrementOrderQuantity(pcode) {
     var price = 0;
     var q = 0;
     const updated = this.state.products.map(product => {
-      if(product.product_code == pcode){
+      if (product.product_code == pcode) {
         q = 1;
         price = product.price;
       } else {
@@ -174,38 +178,44 @@ class Orders extends React.Component {
       return {
         ...product,
         order_quantity: product.order_quantity + q
-      }
+      };
     });
 
-    this.setState({ products: updated,
-                    amount: this.state.amount + price });
+    this.setState({
+      products: updated,
+      amount: this.state.amount + price
+    });
   }
-
 
   handleChange = name => event => {
     this.setState({
-      [name]: event.target.value,
+      [name]: event.target.value
     });
   };
 
   async productCategoryChange(event) {
-   //const products = this.fetchAllProducts();//this.fetchFilteredProducts(event.target.value);
-   this.setState({ category: event.target.value });
-   const products = await this.fetchProducts(event.target.value);
-   this.setState({products: products.map(o => { o.order_quantity = 0; return o; })});
+    //const products = this.fetchAllProducts();//this.fetchFilteredProducts(event.target.value);
+    this.setState({ category: event.target.value });
+    const products = await this.fetchProducts(event.target.value);
+    this.setState({
+      products: products.map(o => {
+        o.order_quantity = 0;
+        return o;
+      })
+    });
   }
 
   async submitOrder() {
     //get the set of order items
     var items = [];
     this.state.products.map(product => {
-      if(product.order_quantity > 0) {
+      if (product.order_quantity > 0) {
         items.push({
           product_company_id: product.company_id,
           product_category: product.category,
           product_code: product.product_code,
           quantity: product.order_quantity
-        })
+        });
       }
     });
 
@@ -217,12 +227,11 @@ class Orders extends React.Component {
       customer_phone: this.state.phoneNumber,
       items: items
     };
-    console.log("SUBMITTING ORDER",orderBody );
+    console.log("SUBMITTING ORDER", orderBody);
     await this.postOrder(orderBody);
   }
 
   render() {
-    
     const {
       classes,
       theme,
@@ -253,7 +262,7 @@ class Orders extends React.Component {
                   label="First Name"
                   className={classes.textField}
                   value={this.state.firstName}
-                  onChange={this.handleChange('firstName')}
+                  onChange={this.handleChange("firstName")}
                 />
                 <TextField
                   required
@@ -261,7 +270,7 @@ class Orders extends React.Component {
                   label="Last Name"
                   className={classes.textField}
                   value={this.state.lastName}
-                  onChange={this.handleChange('lastName')}
+                  onChange={this.handleChange("lastName")}
                 />
                 <TextField
                   required
@@ -269,7 +278,7 @@ class Orders extends React.Component {
                   label="Address"
                   className={classes.textField}
                   value={this.state.address}
-                  onChange={this.handleChange('address')}
+                  onChange={this.handleChange("address")}
                 />
                 <TextField
                   required
@@ -277,75 +286,73 @@ class Orders extends React.Component {
                   label="Phone Number"
                   className={classes.textField}
                   value={this.state.phoneNumber}
-                  onChange={this.handleChange('phoneNumber')}
+                  onChange={this.handleChange("phoneNumber")}
                 />
               </form>
             </Paper>
             <Paper>
               <Button
-                  variant="raised"
-                  color="primary"
-                  className={classes.fullbutton}
-                  fullWidth
-                  onClick={this.submitOrder.bind(this)}
-                >
+                variant="raised"
+                color="primary"
+                className={classes.fullbutton}
+                fullWidth
+                onClick={this.submitOrder.bind(this)}
+              >
                 Submit Order
               </Button>
               <Divider light />
               <FormControl fullWidth className={classes.margin}>
-                  <InputLabel htmlFor="adornment-amount">
-                    Calculated Total Cost
-                  </InputLabel>
-                  <Input
-                    disabled
-                    id="adornment-amount"
-                    value={this.state.amount}
-                    startAdornment={
-                      <InputAdornment position="start">$</InputAdornment>
-                    }
-                  />
+                <InputLabel htmlFor="adornment-amount">
+                  Calculated Total Cost
+                </InputLabel>
+                <Input
+                  disabled
+                  id="adornment-amount"
+                  value={this.state.amount}
+                  startAdornment={
+                    <InputAdornment position="start">$</InputAdornment>
+                  }
+                />
               </FormControl>
-
-
             </Paper>
           </Grid>
           <Grid item xs={8}>
-            
             <Paper className={classes.paper}>
               <Typography variant="subheading" gutterBottom>
                 Product Category:{" "}
               </Typography>
 
               <Select
-                  value={this.state.category}
-                  onChange={this.productCategoryChange.bind(this)}
-                  inputProps={{
-                    name: "category",
-                    id: "productCategory"
-                  }}
-                  className={classes.textField}
-                >
-                  <MenuItem value={"trees"}>Trees</MenuItem>
-                  <MenuItem value={"seeds"}>Seeds</MenuItem>
-                  <MenuItem value={"shrubs"}>Shrubs</MenuItem>
-                  <MenuItem value={"cultureboxes"}>Culture Boxes</MenuItem>
-                  <MenuItem value={"genomics"}>Genomics</MenuItem>
-                  <MenuItem value={"referencematerials"}>Reference Materials</MenuItem>
+                value={this.state.category}
+                onChange={this.productCategoryChange.bind(this)}
+                inputProps={{
+                  name: "category",
+                  id: "productCategory"
+                }}
+                className={classes.textField}
+              >
+                <MenuItem value={"trees"}>Trees</MenuItem>
+                <MenuItem value={"seeds"}>Seeds</MenuItem>
+                <MenuItem value={"shrubs"}>Shrubs</MenuItem>
+                <MenuItem value={"cultureboxes"}>Culture Boxes</MenuItem>
+                <MenuItem value={"genomics"}>Genomics</MenuItem>
+                <MenuItem value={"referencematerials"}>
+                  Reference Materials
+                </MenuItem>
               </Select>
             </Paper>
 
-            <Paper>
+            <Paper className={classes.paper}>
+              >
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow style={styles.tableRowStyle}>
-                    
-                    
                     <TableCell>Product Code</TableCell>
                     <TableCell>Product Desc</TableCell>
                     <TableCell>Price ($)</TableCell>
                     <TableCell numeric>Items In Stock</TableCell>
                     <TableCell numeric> Order Quantity </TableCell>
-                    <TableCell/>
+                    <TableCell />
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -358,8 +365,14 @@ class Orders extends React.Component {
                         <TableCell numeric>{n.quantity}</TableCell>
                         <TableCell numeric>{n.order_quantity}</TableCell>
                         <TableCell padding="checkbox">
-                          <IconButton color="primary" className={classes.button} aria-label="Add to shopping cart"
-                            onClick={event => this.incrementOrderQuantity(n.product_code)}>
+                          <IconButton
+                            color="primary"
+                            className={classes.button}
+                            aria-label="Add to shopping cart"
+                            onClick={event =>
+                              this.incrementOrderQuantity(n.product_code)
+                            }
+                          >
                             <AddShoppingCartIcon />
                           </IconButton>
                         </TableCell>
@@ -369,7 +382,6 @@ class Orders extends React.Component {
                 </TableBody>
               </Table>
             </Paper>
-
           </Grid>
         </Grid>
       </div>

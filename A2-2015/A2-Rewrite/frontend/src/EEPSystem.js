@@ -57,7 +57,7 @@ const styles = theme => ({
     flexGrow: 1,
     height: "100%",
     zIndex: 1,
-    overflow: "hidden",
+    overflow: "scroll",
     position: "relative",
     display: "flex",
     width: "100%",

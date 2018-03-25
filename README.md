@@ -61,6 +61,12 @@ You should see:
 
 ![GitHub Logo](A2-2015/A2-Rewrite/imgs/api.png)
 
+#### 6. Apps on Google App Engine
+
+Backend: https://eep-backend.appspot.com/ (you don't have to open backend app to run frontend app)
+
+Frontend: https://eep-frontend.appspot.com/
+
 ## Troubleshoot
 
 If you get some weird mysql error, install mysql2 globally using:
@@ -76,11 +82,11 @@ Get all product categories: '<url>/product_categories'
 Get product inventory for 'shrubs': '<url>/products?category_filter=shrubs'
   
 Get all orders: '<url>/orders?show_pending=true&show_shipped=true'
- 
+
 Get items for order #2: '<url>/order_item?order_id=2'
   
 Create a new order: '<url>/create_order'
-  
+
 To create an order put the order details in the req.body:
 ```
 {

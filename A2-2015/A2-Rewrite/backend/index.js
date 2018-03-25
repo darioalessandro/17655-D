@@ -239,6 +239,14 @@ app.get("/order_item", async function(req, res) {
   }
 });
 
+app.get("/mark_order_shipped", async function(req, res) {
+  var order_id = req.param("order_id", null);
+
+  await Orders.update({ shipped_flag: true }, { where: { id: order_id } })
+    .then(result => res.send("updated order!"))
+    .catch(err => res.send("error updating order"));
+});
+
 app.post("/create_order", jsonParser, async function(req, res) {
   if (!req.body) return res.sendStatus(400);
 

@@ -122,10 +122,10 @@ class Orders extends React.Component {
       products: [],
       checked: [0],
       category: "",
-      firstName: "",
-      lastName: "",
-      address: "",
-      phoneNumber: "",
+      firstName: "Johnny",
+      lastName: "Appleseed",
+      address: "1 Orchard Ln.",
+      phoneNumber: "(123) 456 7890",
       calculateCost: [0],
       amount: 0
     };
@@ -133,6 +133,15 @@ class Orders extends React.Component {
 
   async componentDidMount() {
     // wait until user selects an initial category
+
+    this.setState({ category: 'cultureboxes'});
+    const products = await this.fetchProducts('cultureboxes');
+   this.setState({products: products.map(o => 
+                                          {
+                                            o.order_quantity = 0;
+                                            return o;
+                                          })
+                                        });
   };
 
   fetchProducts(filter) {

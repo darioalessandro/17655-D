@@ -122,7 +122,7 @@ class EEPSystem extends React.Component {
           <ListItemIcon>
             <OrdersIcon />
           </ListItemIcon>
-          <ListItemText primary="Orders" />
+          <ListItemText primary="New Orders" />
         </ListItem>
         <ListItem
           button
@@ -140,7 +140,7 @@ class EEPSystem extends React.Component {
           <ListItemIcon>
             <ShippingIcon />
           </ListItemIcon>
-          <ListItemText primary="Shipping" />
+          <ListItemText primary="Order Shipping" />
         </ListItem>
         <ListItem
           button

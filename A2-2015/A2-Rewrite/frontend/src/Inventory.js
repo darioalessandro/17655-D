@@ -34,9 +34,7 @@ const styles = theme => ({
     minWidth: 320,
     maxWidth: 500
   },
-  table: {
-    width: "100%"
-  },
+
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,

@@ -136,7 +136,7 @@ class Inventory extends React.Component {
           <Grid item xs={4}>
             <Paper className={classes.paper}>
               <Typography variant="subheading" gutterBottom>
-                Product Inforamtion
+                Product Information
               </Typography>
 
               <form className={classes.container} noValidate autoComplete="off">

@@ -37,7 +37,7 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200
+   // width: 200
   },
   menu: {
     width: 200
@@ -87,11 +87,10 @@ class Inventory extends React.Component {
       checked: newChecked
     });
   };
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
-  handleAmount = prop => event => {
-    this.setState({ [prop]: event.target.value });
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
   };
 
   constructor(props) {
@@ -99,7 +98,12 @@ class Inventory extends React.Component {
     this.state = {
       products: [],
       checked: [0],
-      category: ""
+      productCompany: "",
+      productCategory: "",
+      productCode: "",
+      productDescription: "",
+      productQuantity: 0,
+      productPrice: 0
     };
   }
 
@@ -112,6 +116,34 @@ class Inventory extends React.Component {
     return fetch(`${this.props.backendURL}/products`).then(result =>
       result.json()
     );
+  }
+  
+  async upsertProduct() {
+    //get the set of order items
+    await this.postProduct({
+      company_id: this.state.productCompany,
+      category: this.state.productCategory,
+      product_code: this.state.productCode,
+      description: this.state.productDescription,
+      quantity: this.state.productQuantity,
+      price: this.state.productPrice
+    });
+
+    //refresh ui with updated product list
+    const products = await this.fetchProducts();
+    this.setState({ products: products });
+  }
+
+  postProduct(product) {
+    console.log("posting product", product);
+    return fetch(`${this.props.backendURL}/product_upsert`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(product)
+    })
   }
 
   render() {
@@ -143,13 +175,33 @@ class Inventory extends React.Component {
                   htmlFor="productCategory"
                   className={classes.textField}
                 >
+                  Product Company
+                </InputLabel>
+                <Select
+                  fullWidth
+                  value={this.state.productCompany}
+                  onChange={this.handleChange('productCompany')}
+                  inputProps={{
+                    name: "productCompany",
+                    id: "productCompany"
+                  }}
+                  className={classes.textField}
+                >
+                  <MenuItem value={"EEP"}>EEP</MenuItem>
+                  <MenuItem value={"Leaf Tech"}>Leaf Tech</MenuItem>
+                </Select>
+                <InputLabel
+                  htmlFor="productCategory"
+                  className={classes.textField}
+                >
                   Product Category
                 </InputLabel>
                 <Select
-                  value={this.state.category}
-                  onChange={this.handleChange}
+                  fullWidth
+                  value={this.state.productCategory}
+                  onChange={this.handleChange('productCategory')}
                   inputProps={{
-                    name: "category",
+                    name: "productCategory",
                     id: "productCategory"
                   }}
                   className={classes.textField}
@@ -166,17 +218,26 @@ class Inventory extends React.Component {
                 <TextField
                   required
                   id="required"
-                  label="Product ID"
+                  label="Product Code"
+                  fullWidth
+                  value={this.state.productCode}
+                  onChange={this.handleChange('productCode')}
                   className={classes.textField}
                 />
                 <TextField
                   required
+                  fullWidth
+                  value={this.state.productQuantity}
+                  onChange={this.handleChange('productQuantity')}
                   id="required"
                   label="Quantity"
                   className={classes.textField}
                 />
                 <TextField
                   required
+                  fullWidth
+                  value={this.state.productDescription}
+                  onChange={this.handleChange('productDescription')}
                   id="required"
                   label="Product Desc"
                   className={classes.textField}
@@ -189,10 +250,11 @@ class Inventory extends React.Component {
                 </InputLabel>
                 <Input
                   required
+                  fullWidth
                   id="adornment-amount"
                   className={classes.textField}
-                  value={this.state.amount}
-                  onChange={this.handleAmount("amount")}
+                  value={this.state.productPrice}
+                  onChange={this.handleChange('productPrice')}
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>
                   }
@@ -203,8 +265,9 @@ class Inventory extends React.Component {
                 color="primary"
                 className={classes.fullbutton}
                 fullWidth
+                onClick={this.upsertProduct.bind(this)}
               >
-                Add Item
+                Add/Update Product
               </Button>
             </Paper>
           </Grid>
@@ -222,6 +285,7 @@ class Inventory extends React.Component {
                     <TableCell>Product Code</TableCell>
                     <TableCell>Description</TableCell>
                     <TableCell>Price ($)</TableCell>
+                    <TableCell>Quantity</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -252,26 +316,13 @@ class Inventory extends React.Component {
                           <TableCell numeric>{p.product_code}</TableCell>
                           <TableCell numeric>{p.description}</TableCell>
                           <TableCell numeric>{p.price}</TableCell>
+                          <TableCell numeric>{p.quantity}</TableCell>
                         </TableRow>
                       );
                     })
                   )}
                 </TableBody>
               </Table>
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.button}
-              >
-                Delete Selected Items
-              </Button>
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.button}
-              >
-                Decrement Selcted Items
-              </Button>
             </Paper>
           </Grid>
         </Grid>

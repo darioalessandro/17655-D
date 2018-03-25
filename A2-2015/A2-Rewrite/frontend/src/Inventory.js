@@ -38,7 +38,6 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-   // width: 200
   },
   menu: {
     width: 200
@@ -281,8 +280,7 @@ class Inventory extends React.Component {
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell padding="checkbox" />
-                    <TableCell>Company ID</TableCell>
+                    <TableCell>Company</TableCell>
                     <TableCell>Category</TableCell>
                     <TableCell>Product Code</TableCell>
                     <TableCell>Description</TableCell>
@@ -304,15 +302,6 @@ class Inventory extends React.Component {
                       }`;
                       return (
                         <TableRow hover key={key}>
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              onChange={this.handleToggle(p.product_code)}
-                              checked={
-                                this.state.checked.indexOf(p.product_code) !==
-                                -1
-                              }
-                            />
-                          </TableCell>
                           <TableCell>{p.company_id}</TableCell>
                           <TableCell numeric>{p.category}</TableCell>
                           <TableCell numeric>{p.product_code}</TableCell>

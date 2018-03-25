@@ -73,14 +73,6 @@ function createData(productID, productDesc, productPrice, productStock) {
   return { id, productID, productDesc, productPrice, productStock };
 }
 
-
-
-const tableData = [
-  createData("12345", "test1", "$4.00", 24),
-  createData("23456", "test2", "$8.00", 37),
-  createData("34567", "test3", "$16.00", 24)
-];
-
 class Shipping extends React.Component {
   handleToggle = value => () => {
     const { checked } = this.state;
@@ -97,9 +89,6 @@ class Shipping extends React.Component {
       checked: newChecked
     });
   };
-  /*handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };*/
 
   handleChange = name => event => {
     this.setState({
@@ -110,12 +99,27 @@ class Shipping extends React.Component {
     this.setState({ [prop]: event.target.value });
   };
 
+  handleClick = async (event, id) => {
+    this.setState({ selectedOrder: id });
+    const orderDetails = await this.fetchOrderDetails(id);
+    console.log("order details", orderDetails);
+  };
+
+  isSelected = id => this.state.selectedOrder == id;
+
+
   constructor(props) {
     super();
     this.state = {
-      products: [],
+      orders: [],
       checked: [0],
       category: "",
+      selectedOrder: null,
+      orderFirst: "",
+      orderLast: "",
+      orderAddress: "",
+      orderPhone: "",
+      orderItems: [],
       showPending: true,
       showShipped: true
     };
@@ -123,15 +127,30 @@ class Shipping extends React.Component {
 
   async componentDidMount() {
     // do nothing for now
+
+    const orders = await this.fetchOrders(this.state.showPending, this.state.showShipped);
+    console.log("got orders", orders);
+    this.setState({orders:orders});
   }
 
   fetchOrders(showPending, showShipped) {
-    return fetch(`${this.props.backendURL}/orders?show_pending=`).then(result =>
+    return fetch(`${this.props.backendURL}/orders?show_pending=${encodeURIComponent(showPending)}&show_shipped=${encodeURIComponent(showShipped)}`).then(result =>
       result.json());
   }
   fetchOrderDetails(orderId) {
     return fetch(`${this.props.backendURL}/order_item?order_id=${encodeURIComponent(orderId)}`).then(result =>
       result.json());
+  }
+
+  async toggleShowPending() {
+    this.setState({showPending: !this.state.showPending});
+    const orders = await this.fetchOrders(!this.state.showPending, this.state.showShipped);
+    this.setState({orders:orders});
+  }
+  async toggleShowShipped() {
+    this.setState({showShipped: !this.state.showShipped});
+    const orders = await this.fetchOrders(this.state.showPending, !this.state.showShipped);
+    this.setState({orders:orders});
   }
 
   render() {
@@ -162,7 +181,7 @@ class Shipping extends React.Component {
                   control={
                     <Checkbox
                       checked={this.state.showPending}
-                      onChange={this.handleChange('showPending')}
+                      onChange={this.toggleShowPending.bind(this)}
                       value="checkedA"
                     />
                   }
@@ -172,7 +191,7 @@ class Shipping extends React.Component {
                   control={
                     <Checkbox
                       checked={this.state.showShipped}
-                      onChange={this.handleChange('showShipped')}
+                      onChange={this.toggleShowShipped.bind(this)}
                       value="checkedB"
                       color="primary"
                     />
@@ -184,55 +203,41 @@ class Shipping extends React.Component {
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell padding="checkbox" />
                     <TableCell>Order Number</TableCell>
                     <TableCell>Order Date & Time</TableCell>
-                    <TableCell>Customer Name</TableCell>
+                    <TableCell>Customer First Name</TableCell>
+                    <TableCell>Customer Last Name</TableCell>
+                    <TableCell>Order Shipped?</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.state.products.length === 0 ? (
+                  {this.state.orders.length === 0 ? (
                     <TableRow hover>
                       <TableCell colSpan={4}>
-                        No products found! this is most likely a db error
                       </TableCell>
                     </TableRow>
                   ) : (
-                    this.state.products.map(o => {
-                      const key = `${o.orderNum}-${o.orderDate}-${
-                        o.customerName
-                      }`;
+                    this.state.orders.map(o => {
+                      const isSelected = this.isSelected(o.id);
                       return (
-                        <TableRow hover key={key}>
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              onChange={this.handleToggle(o.orderNum)}
-                              checked={
-                                this.state.checked.indexOf(o.orderNum) !== -1
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>{o.orderNum}</TableCell>
-                          <TableCell numeric>{o.orderDate}</TableCell>
-                          <TableCell numeric>{o.customerName}</TableCell>
+                        <TableRow hover key={o.id}
+                          onClick={event => this.handleClick(event, o.id)}
+                          selected={isSelected}>
+                          <TableCell>{o.id}</TableCell>
+                          <TableCell numeric>{o.created_at}</TableCell>
+                          <TableCell numeric>{o.customer_first_name}</TableCell>
+                          <TableCell numeric>{o.customer_last_name}</TableCell>
+                          <TableCell>{o.shipped_flag.toString()}</TableCell>
                         </TableRow>
                       );
                     })
                   )}
                 </TableBody>
               </Table>
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.fullbutton}
-                fullWidth
-              >
-                Select Pending Order
-              </Button>
             </Paper>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <Paper className={classes.paper}>
               <Typography variant="subheading" gutterBottom>
                 Order Information
@@ -278,14 +283,14 @@ class Shipping extends React.Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.state.products.length === 0 ? (
+                  {this.state.orderItems.length === 0 ? (
                     <TableRow hover>
                       <TableCell colSpan={4}>
                         No products found! this is most likely a db error
                       </TableCell>
                     </TableRow>
                   ) : (
-                    this.state.products.map(o => {
+                    this.state.orderItems.map(o => {
                       const key = `${o.orderNum}-${o.orderDate}-${
                         o.customerName
                       }`;

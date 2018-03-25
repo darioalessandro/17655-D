@@ -4,6 +4,7 @@ import { withStyles } from "material-ui/styles";
 import Button from "material-ui/Button";
 import TextField from "material-ui/TextField";
 import Checkbox from "material-ui/Checkbox";
+import { FormGroup, FormControlLabel } from 'material-ui/Form';
 import Grid from "material-ui/Grid";
 import Table, {
   TableBody,
@@ -72,6 +73,8 @@ function createData(productID, productDesc, productPrice, productStock) {
   return { id, productID, productDesc, productPrice, productStock };
 }
 
+
+
 const tableData = [
   createData("12345", "test1", "$4.00", 24),
   createData("23456", "test2", "$8.00", 37),
@@ -94,8 +97,14 @@ class Shipping extends React.Component {
       checked: newChecked
     });
   };
-  handleChange = event => {
+  /*handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
+  };*/
+
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
   };
   handleAmount = prop => event => {
     this.setState({ [prop]: event.target.value });
@@ -106,20 +115,23 @@ class Shipping extends React.Component {
     this.state = {
       products: [],
       checked: [0],
-      category: ""
+      category: "",
+      showPending: true,
+      showShipped: true
     };
   }
 
   async componentDidMount() {
-    const products = await this.fetchProducts();
-    console.log("got products ", JSON.stringify(products));
-    this.setState({ products: products });
+    // do nothing for now
   }
 
-  fetchProducts() {
-    return fetch(`http://localhost:3001/products`).then(result =>
-      result.json()
-    );
+  fetchOrders(showPending, showShipped) {
+    return fetch(`${this.props.backendURL}/orders?show_pending=`).then(result =>
+      result.json());
+  }
+  fetchOrderDetails(orderId) {
+    return fetch(`${this.props.backendURL}/order_item?order_id=${encodeURIComponent(orderId)}`).then(result =>
+      result.json());
   }
 
   render() {
@@ -143,8 +155,31 @@ class Shipping extends React.Component {
           <Grid item xs={6}>
             <Paper className={classes.paper}>
               <Typography variant="subheading" gutterBottom>
-                Pending Orders
+                Orders
               </Typography>
+              <FormGroup row>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.showPending}
+                      onChange={this.handleChange('showPending')}
+                      value="checkedA"
+                    />
+                  }
+                  label="Show Pending Orders"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={this.state.showShipped}
+                      onChange={this.handleChange('showShipped')}
+                      value="checkedB"
+                      color="primary"
+                    />
+                  }
+                  label="Show Shipped Orders"
+                />
+              </FormGroup>
 
               <Table className={classes.table}>
                 <TableHead>
@@ -193,62 +228,6 @@ class Shipping extends React.Component {
                 fullWidth
               >
                 Select Pending Order
-              </Button>
-            </Paper>
-          </Grid>
-          <Grid item xs={6}>
-            <Paper className={classes.paper}>
-              <Typography variant="subheading" gutterBottom>
-                Shipped Orders
-              </Typography>
-
-              <Table className={classes.table}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox" />
-                    <TableCell>Order Number</TableCell>
-                    <TableCell>Order Date & Time</TableCell>
-                    <TableCell>Customer Name</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {this.state.products.length === 0 ? (
-                    <TableRow hover>
-                      <TableCell colSpan={4}>
-                        No products found! this is most likely a db error
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    this.state.products.map(o => {
-                      const key = `${o.orderNum}-${o.orderDate}-${
-                        o.customerName
-                      }`;
-                      return (
-                        <TableRow hover key={key}>
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              onChange={this.handleToggle(o.orderNum)}
-                              checked={
-                                this.state.checked.indexOf(o.orderNum) !== -1
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>{o.orderNum}</TableCell>
-                          <TableCell numeric>{o.orderDate}</TableCell>
-                          <TableCell numeric>{o.customerName}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-              <Button
-                variant="raised"
-                color="primary"
-                className={classes.fullbutton}
-                fullWidth
-              >
-                Select Shipped Order
               </Button>
             </Paper>
           </Grid>

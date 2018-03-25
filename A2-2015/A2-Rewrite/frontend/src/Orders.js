@@ -192,12 +192,7 @@ class Orders extends React.Component {
    //const products = this.fetchAllProducts();//this.fetchFilteredProducts(event.target.value);
    this.setState({ category: event.target.value });
    const products = await this.fetchProducts(event.target.value);
-   this.setState({products: products.map(o => 
-                                          {
-                                            o.order_quantity = 0;
-                                            return o;
-                                          })
-                                        });
+   this.setState({products: products.map(o => { o.order_quantity = 0; return o; })});
   }
 
   async submitOrder() {

@@ -22,13 +22,12 @@ const styles = theme => ({
 class SessionLogs extends React.Component {
   constructor(props) {
     super();
-    this.state = { products: [] };
+    this.state = { results: [] };
   }
 
   async componentDidMount() {
-    const products = await this.fetchProducts();
-    console.log("got products ", JSON.stringify(products));
-    this.setState({ products: products });
+    const results = await this.fetchProducts();
+    this.setState({ results: results });
   }
 
   fetchProducts() {
@@ -39,6 +38,7 @@ class SessionLogs extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { results } = this.state;
 
     return (
       <Paper className={classes.root}>
@@ -47,17 +47,17 @@ class SessionLogs extends React.Component {
             <TableRow>
               <TableCell>email</TableCell>
               <TableCell>name</TableCell>
-              <TableCell date>date</TableCell>
+              <TableCell>date</TableCell>
               <TableCell>event</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.products.map(n => {
+            {results.map(n => {
               return (
                 <TableRow key={n.id}>
                   <TableCell>{n.email}</TableCell>
                   <TableCell>{n.name}</TableCell>
-                  <TableCell date>{n.created_at}</TableCell>
+                  <TableCell>{n.created_at}</TableCell>
                   <TableCell>{n.event}</TableCell>
                 </TableRow>
               );

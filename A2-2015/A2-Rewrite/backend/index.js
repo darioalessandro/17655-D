@@ -200,6 +200,14 @@ app.get("/products", async function(req, res) {
   }
 });
 
+app.post("/product_upsert", jsonParser, async function(req, res) {
+  if (!req.body) return res.sendStatus(400);
+
+  console.log(req.body);
+  await Product.upsert(req.body);
+
+  await res.send("updated product!");
+});
 app.get("/product_categories", async function(req, res) {
   res.json(await ProductCategory.findAll({}));
 });

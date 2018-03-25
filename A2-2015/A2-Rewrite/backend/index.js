@@ -240,7 +240,6 @@ app.get("/order_item", async function(req, res) {
 });
 
 app.post("/create_order", jsonParser, async function(req, res) {
-  console.log("creating order record!", req.body);
   if (!req.body) return res.sendStatus(400);
 
   //create the order record

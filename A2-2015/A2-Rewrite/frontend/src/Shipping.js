@@ -99,10 +99,18 @@ class Shipping extends React.Component {
     this.setState({ [prop]: event.target.value });
   };
 
-  handleClick = async (event, id) => {
+  handleClick = async (event, id, first, last, address, phone, date, shipped) => {
     this.setState({ selectedOrder: id });
     const orderDetails = await this.fetchOrderDetails(id);
-    console.log("order details", orderDetails);
+    this.setState({
+      orderFirst: first,
+      orderLast: last,
+      orderAddress: address,
+      orderPhone: phone,
+      orderItems: orderDetails,
+      orderDate: date,
+      orderShipped: shipped
+    });
   };
 
   isSelected = id => this.state.selectedOrder == id;
@@ -120,6 +128,8 @@ class Shipping extends React.Component {
       orderAddress: "",
       orderPhone: "",
       orderItems: [],
+      orderDate: null,
+      orderShipped: true,
       showPending: true,
       showShipped: true
     };
@@ -164,7 +174,7 @@ class Shipping extends React.Component {
       rowCount
     } = this.props;
     const { data, selected } = this.state;
-
+    const isShipped = (this.state.orderShipped == true);
     return (
       <div className={classes.root}>
         <Typography variant="headline" gutterBottom>
@@ -221,7 +231,12 @@ class Shipping extends React.Component {
                       const isSelected = this.isSelected(o.id);
                       return (
                         <TableRow hover key={o.id}
-                          onClick={event => this.handleClick(event, o.id)}
+                          onClick={event => this.handleClick(event, o.id, o.customer_first_name,
+                                                                          o.customer_last_name,
+                                                                          o.customer_address,
+                                                                          o.customer_phone,
+                                                                          o.created_at,
+                                                                          o.shipped_flag)}
                           selected={isSelected}>
                           <TableCell>{o.id}</TableCell>
                           <TableCell numeric>{o.created_at}</TableCell>
@@ -245,30 +260,48 @@ class Shipping extends React.Component {
 
               <form className={classes.container} noValidate autoComplete="off">
                 <TextField
+                  label="Order ID"
+                  type="number"
+                  className={classes.textField}
+                  value={this.state.selectedOrder}
+                  disabled="true"
+                />
+                <TextField
+                  label="Order Shipped?"
+                  className={classes.textField}
+                  value={this.state.orderShipped}
+                  disabled="true"
+                />
+                <TextField
                   label="First Name"
                   className={classes.textField}
+                  value={this.state.orderFirst}
                   disabled="true"
                 />
                 <TextField
                   label="Last Name"
                   className={classes.textField}
+                  value={this.state.orderLast}
                   disabled="true"
                 />
 
                 <TextField
                   label="Phone Number"
                   className={classes.textField}
+                  value={this.state.orderPhone}
                   disabled="true"
                 />
-                <TextField
+                <TextField numeric
                   label="Order Date"
                   className={classes.textField}
+                  value={this.state.orderDate}
                   disabled="true"
                 />
 
                 <TextField
                   label="Address"
                   disabled="true"
+                  value={this.state.orderAddress}
                   multiline
                   fullWidth
                   rowsMax="4"
@@ -277,45 +310,37 @@ class Shipping extends React.Component {
               <Table className={classes.table}>
                 <TableHead>
                   <TableRow>
-                    <TableCell padding="checkbox" />
-                    <TableCell>Order Number</TableCell>
-                    <TableCell>Order Date & Time</TableCell>
+                    <TableCell>Product Category</TableCell>
+                    <TableCell>Product Code</TableCell>
+                    <TableCell>Quantity</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {this.state.orderItems.length === 0 ? (
                     <TableRow hover>
                       <TableCell colSpan={4}>
-                        No products found! this is most likely a db error
                       </TableCell>
                     </TableRow>
                   ) : (
                     this.state.orderItems.map(o => {
-                      const key = `${o.orderNum}-${o.orderDate}-${
-                        o.customerName
+                      const key = `${o.order_id}-${o.product_company_id}-${
+                        o.product_category}-${o.product_code
                       }`;
                       return (
                         <TableRow hover key={key}>
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              onChange={this.handleToggle(o.orderNum)}
-                              checked={
-                                this.state.checked.indexOf(o.orderNum) !== -1
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>{o.orderNum}</TableCell>
-                          <TableCell numeric>{o.orderDate}</TableCell>
+                          <TableCell>{o.product_category}</TableCell>
+                          <TableCell>{o.product_code}</TableCell>
+                          <TableCell numeric>{o.quantity}</TableCell>
                         </TableRow>
                       );
                     })
                   )}
                 </TableBody>
               </Table>
-              <TextField label="Messages" multiline fullWidth rowsMax="4" />
               <Button
                 variant="raised"
                 color="primary"
+                disabled={isShipped}
                 className={classes.fullbutton}
                 fullWidth
               >

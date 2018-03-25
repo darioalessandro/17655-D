@@ -240,21 +240,21 @@ app.get("/order_item", async function(req, res) {
 });
 
 app.post("/create_order", jsonParser, async function(req, res) {
-  console.log("creating order record!");
+  console.log("creating order record!", req.body);
   if (!req.body) return res.sendStatus(400);
 
   //create the order record
   await Orders.build({
-    customer_first_name: req.body.customer_first_name,
-    customer_last_name: req.body.customer_last_name,
-    customer_address: req.body.customer_address,
-    customer_phone: req.body.customer_phone,
+    customer_first_name: req.body.order.customer_first_name,
+    customer_last_name: req.body.order.customer_last_name,
+    customer_address: req.body.order.customer_address,
+    customer_phone: req.body.order.customer_phone,
     shipped_flag: false //start out a new order as not shipped
   })
     .save()
     .then(neworder => {
       // create the associated order_item records
-      req.body.items.map(item => {
+      req.body.order.items.map(item => {
         return OrderItems.build({
           order_id: neworder.id,
           product_company_id: item.product_company_id,

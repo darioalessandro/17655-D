@@ -129,6 +129,10 @@ class Inventory extends React.Component {
       quantity: this.state.productQuantity,
       price: this.state.productPrice
     });
+
+    //refresh ui with updated product list
+    const products = await this.fetchProducts();
+    this.setState({ products: products });
   }
 
   postProduct(product) {
@@ -264,7 +268,7 @@ class Inventory extends React.Component {
                 fullWidth
                 onClick={this.upsertProduct.bind(this)}
               >
-                Add Item
+                Add/Update Product
               </Button>
             </Paper>
           </Grid>
@@ -283,6 +287,7 @@ class Inventory extends React.Component {
                     <TableCell>Product Code</TableCell>
                     <TableCell>Description</TableCell>
                     <TableCell>Price ($)</TableCell>
+                    <TableCell>Quantity</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -313,6 +318,7 @@ class Inventory extends React.Component {
                           <TableCell numeric>{p.product_code}</TableCell>
                           <TableCell numeric>{p.description}</TableCell>
                           <TableCell numeric>{p.price}</TableCell>
+                          <TableCell numeric>{p.quantity}</TableCell>
                         </TableRow>
                       );
                     })

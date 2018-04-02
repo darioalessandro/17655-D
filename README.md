@@ -1,5 +1,21 @@
 # 17655-D
 
+## A3
+
+This assignment requires of several apps to be initialized in a synchronized way, that is why I created some convenience
+scripts for Mac OS.
+
+### How to launch the system?
+
+1. Head to ```A3/Source```
+2. Run ```./RestartEverything.sh```
+
+If everything goes as expected, hou should see a bunch of little Java Apps being created in the UI:
+
+![A3 Running](A3/imgs/screenshot1.png)
+
+3. To stop everything please run ```./StopEverything.sh```
+
 ## A2
 
 ### MySQL setup on Mac OS:

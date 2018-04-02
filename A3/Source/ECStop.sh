@@ -3,12 +3,12 @@
 # TODO: fix this script
 ECHO STOPPING ECS System
 ECHO STOPPING ECS MONITORING CONSOLE
-pkill ECSConsole
+pkill -f ECSConsole
 ECHO STOPPING TEMPERATURE CONTROLLER CONSOLE
-pkill TemperatureController
+pkill -f TemperatureController
 ECHO STOPPING HUMIDITY SENSOR CONSOLE
-pkill HumidityController
+pkill -f HumidityController
 ECHO STOPPING TEMPERATURE SENSOR
-pkill TemperatureSensor
+pkill -f TemperatureSensor
 ECHO STOPPING HUMIDITY SENSOR CONSOLE
-pkill HumiditySensor
+pkill -f HumiditySensor

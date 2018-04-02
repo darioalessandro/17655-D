@@ -1,4 +1,5 @@
 #!/bin/bash
+# docker run -it -d -p 1099:1099 rmiregistry rmiregistry
 # TODO: fix this script
 ECHO Starting ECS System
 ECHO ECS Monitoring Console

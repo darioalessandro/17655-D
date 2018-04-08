@@ -123,6 +123,26 @@ public class MessageManagerInterface
 	*
 	****************************************************************************/
 
+	public static MessageManagerInterface register(String args[]) throws LocatingMessageManagerException, RegistrationException, ParticipantAlreadyRegisteredException
+	{
+	/////////////////////////////////////////////////////////////////////////////////
+	// Get the IP address of the message manager
+	/////////////////////////////////////////////////////////////////////////////////
+	String MsgMgrIP;                    // Message Manager IP address
+	if ( args.length == 0 ) {
+		// message manager is on the local system
+		System.out.println("\n\nAttempting to register on the local machine..." );
+		// Here we create an message manager interface object. This assumes
+		// that the message manager is on the local machine
+		return new MessageManagerInterface();
+	} else {
+		// message manager is not on the local system
+		MsgMgrIP = args[0];
+		System.out.println("\n\nAttempting to register on the machine:: " + MsgMgrIP );
+		return new MessageManagerInterface( MsgMgrIP );
+	} // if
+}
+
 	public MessageManagerInterface() throws LocatingMessageManagerException, RegistrationException, ParticipantAlreadyRegisteredException
 	{
 		// First we check to see if the participant is already registered. If not

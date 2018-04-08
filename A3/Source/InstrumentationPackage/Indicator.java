@@ -30,6 +30,7 @@ package InstrumentationPackage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class Indicator extends JFrame
 {
@@ -40,60 +41,6 @@ public class Indicator extends JFrame
 	private Color IluminationColor = Color.black;
 	private Color TextColor = Color.black;
 	private JFrame IndicatorWindow;
-
-	/***************************************************************************
-	* Constructor:: Indicator
-	* Purpose: This method sets up a JFrame window and drawing pane with the
-	*		   title specified at the position indicated by the x, y coordinates.
-	*
-	* Arguments: String Label - the indicator title
-	*			 Float Xpos - the vertical position of the indicator on the screen
-	*			 			  specified in terms of a percentage of the screen width.
-	*			 Float Ypos - the horizontal position of the indicator on the screen
-	*			 		 	  specified in terms of a percentage of the screen height.
-	*
-	* Returns: Indicator
-	*
-	* Exceptions: none
-	*
-	****************************************************************************/
-
-	public Indicator(String Label, float Xpos, float Ypos)
-	{
-		MessageLabel = Label;
-
-    	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setBackground( Color.lightGray );
-		Toolkit aKit = this.getToolkit();
-		Dimension ScreenSize = aKit.getScreenSize();
-
-		// Size up the indicators. They width and height is 1% of the 
-		// screen height or width (which ever is larger).
-		
-		if (ScreenSize.width >= ScreenSize.height)
-		{
-			Height = (int)(ScreenSize.height * 0.1);
-
-		} else {
-
-			Height = (int)(ScreenSize.width * 0.1);
-
-		} // if
-
-		/* Calculate the X and Y position of the window's upper left
-		** hand corner as a proportion of the screen
-		*/
-		
-		UpperLeftX = (int)(ScreenSize.width * Xpos);
-		UpperLeftY = (int)(ScreenSize.height * Ypos);
-		
-		setBounds(UpperLeftX, UpperLeftY, Height, Height);
-		setVisible(true);
-		Graphics g = getGraphics();
-
-		repaint();
-
-	} // constructor
 
 	/***************************************************************************
 	* Constructor:: Indicator
@@ -140,7 +87,6 @@ public class Indicator extends JFrame
 		setBounds(Xpos, Ypos, Height, Height);
 		setVisible(true);
 		Graphics g = getGraphics();
-
 		repaint();
 
 	} // constructor
@@ -155,81 +101,6 @@ public class Indicator extends JFrame
 	*			 Float Ypos - the horizontal position of the indicator on the screen
 	*			 		 	  specified in terms of a percentage of the screen height.
 	*
-	*			 int InitialColor - specifies the color that the indicator should
-	*								be on startup.
-	*
-	* Returns: Indicator
-	*
-	* Exceptions: none
-	*
-	****************************************************************************/
-
-	public Indicator(String Label, float Xpos, float Ypos, int InitialColor )
-	{
-		MessageLabel = Label;
-
-		switch( InitialColor )
-		{
-			case 0:
-				IluminationColor = Color.black;
-				break;
-
-			case 1:
-				IluminationColor = Color.green;
-				break;
-
-			case 2:
-				IluminationColor = Color.yellow;
-				break;
-
-			case 3:
-				IluminationColor = Color.red;
-				break;
-
-		} // switch
-
-    	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setBackground( Color.lightGray );
-		Toolkit aKit = this.getToolkit();
-		Dimension ScreenSize = aKit.getScreenSize();
-
-		if (ScreenSize.width >= ScreenSize.height)
-		{
-			Height = (int)(ScreenSize.height * 0.1);
-
-		} else {
-
-			Height = (int)(ScreenSize.width * 0.1);
-
-		} // if
-
-		/* Calculate the X and Y position of the window's upper left
-		** hand corner as a proportion of the screen
-		*/
-		
-		UpperLeftX = (int)(ScreenSize.width * Xpos);
-		UpperLeftY = (int)(ScreenSize.height * Ypos);
-		
-		setBounds(UpperLeftX, UpperLeftY, Height, Height);
-		
-		setVisible(true);
-		Graphics g = getGraphics();
-
-		repaint();
-
-	} // constructor
-
-	
-	/***************************************************************************
-	* Constructor:: Indicator
-	* Purpose: This method sets up a JFrame window and drawing pane with the
-	*		   title specified at the position indicated by the x, y coordinates.
-	*
-	* Arguments: String Label - the indicator title
-	*			 int Xpos - the vertical position of the indicator on the screen
-	*			 			specified in pixels.
-	*			 int Ypos - the horizontal position of the indicator on the screen
-	*			 			specified in pixels.
 	*			 int InitialColor - specifies the color that the indicator should
 	*								be on startup.
 	*
@@ -406,6 +277,13 @@ public class Indicator extends JFrame
 
 		repaint();
 
+	} // SetLampColor
+
+	public void SetLampColorAndMessage(String s, Color c)
+	{
+		IluminationColor = c;
+		MessageLabel = s;
+		repaint();
 	} // SetLampColor
 
 	/***************************************************************************

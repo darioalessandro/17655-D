@@ -5,4 +5,3 @@ javac *.java
 sleep 2
 ./ECRestart.sh
 sleep 2
-./SecurityRestart.sh

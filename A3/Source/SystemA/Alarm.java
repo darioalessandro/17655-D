@@ -15,7 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class Alarm extends Thread {
+class Alarm {
 
     public Message Msg = null;                    // Message object
     public MessageQueue eq = null;                // Message Queue
@@ -44,32 +44,30 @@ class Alarm extends Thread {
         });
     }
 
-    @Override
-    public void run() {
+
+    void sendHeartbeat(String name, int processId) throws Exception {
+        System.out.println("HEARTBEAT" + "." + name + "." + processId);
+        em.SendMessage(new Message( (int) 12, "HEARTBEAT" + "." + name + "." + processId));
+    }
+
+    void flushMessages()  throws Exception {
+        eq = em.GetMessageQueue();
+        for ( int i = 0; i < eq.GetSize(); i++ ) {
+            Message msg  = eq.GetMessage();
+        }
+    }
+
+    public void run() throws Exception {
         while(!Done) {
             try {
-                Message msg = new Message( (int) 10, "ALARM." + alarmName + "." + (Active ? "ACTIVE":"INACTIVE"));
+                flushMessages();
+                sendHeartbeat(alarmName, 0);
                 Thread.sleep(Delay);
+                Message msg = new Message( (int) 10, "ALARM." + alarmName + "." + (Active ? "ACTIVE":"INACTIVE"));
                 em.SendMessage(msg);
             }catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static void main(String args[]) throws Exception {
-        ArrayList<Thread> arrThreads = new ArrayList<Thread>();
-        Alarm motionDetector = new Alarm("Motion", args);
-        Alarm windowBreakSensor = new Alarm("Window_Break", args);
-//        Alarm doorBreakSensor = new Alarm("Door_Break", args);
-        motionDetector.start();
-        windowBreakSensor.start();
-//        doorBreakSensor.start();
-        arrThreads.add(motionDetector);
-        arrThreads.add(windowBreakSensor);
-//        arrThreads.add(doorBreakSensor);
-        for (int i = 0; i < arrThreads.size(); i++) {
-            arrThreads.get(i).join();
         }
     }
 }

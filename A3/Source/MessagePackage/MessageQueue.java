@@ -56,6 +56,10 @@ public class MessageQueue implements Serializable
 
 	} // AddMessage
 
+	public long size() {
+		return MessageList.size();
+	}
+
 	/***************************************************************************
 	* CONCRETE METHOD:: GetSize
 	* Purpose: This method returns the size of the queue.

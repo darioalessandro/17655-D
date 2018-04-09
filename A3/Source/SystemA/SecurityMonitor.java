@@ -28,17 +28,23 @@ class SecurityMonitor {
         em = MessageManagerInterface.register(args);    // Interface object to the message manager
     }
 
+    void sendHeartbeat(String name, int processId) throws Exception {
+        em.SendMessage(new Message( (int) 12, "HEARTBEAT" + "." + name + "." + processId));
+    }
+
     void run() throws Exception {
         setupUI();
         while (!Done) {
             eq = em.GetMessageQueue();
             for ( int i = 0; i < eq.GetSize(); i++ ) {
                 Message msg  = eq.GetMessage();
+                System.out.println(msg.GetMessage());
                 if ( msg.GetMessageId() == 10 ) {
                     processMessage(msg);
                 }
             }
             processIntrusionAlarmsState();
+            sendHeartbeat("SecurityMonitor", 0);
             Thread.sleep( Delay );
         }
     }

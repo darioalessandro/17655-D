@@ -147,15 +147,15 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 	synchronized public void SendMessage(Message m ) throws RemoteException
 	{
 		MessageQueue mq;
-
 		// For every queue on the list, add the message.
-
+		System.out.println("received message " + m.GetMessage());
 		for ( int i = 0; i < MessageQueueList.size(); i++ )
 		{
 			mq = MessageQueueList.get(i);
 			mq.AddMessage(m);
-			MessageQueueList.set(i, mq);
 
+			System.out.println("adding message to queue at index " + i + " length: " + mq.size());
+			MessageQueueList.set(i, mq);
 		} // for
 
 		l.DisplayStatistics( "Incoming message posted from ID: " + m.GetSenderId() );
@@ -201,9 +201,11 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 		} // for
 
 		if (found)
-				l.DisplayStatistics( "Get message queue request from ID: " + id + ". Message queue returned.");
+				l.DisplayStatistics( "Get message queue request from ID: " + id + ". Message queue returned. length: " + temp.size());
 		else
 				l.DisplayStatistics( "Get message queue request from ID: " + id + ". ID not found.");
+
+		fo
 
 		return temp;
 

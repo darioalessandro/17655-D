@@ -28,7 +28,8 @@ class SecurityMonitor {
         em = MessageManagerInterface.register(args);    // Interface object to the message manager
     }
 
-    void sendHeartbeat(String name, int processId) throws Exception {
+    void sendHeartbeat(String name, long processId) throws Exception {
+        System.out.println("HEARTBEAT" + "." + name + "." + processId);
         em.SendMessage(new Message( (int) 12, "HEARTBEAT" + "." + name + "." + processId));
     }
 
@@ -44,7 +45,7 @@ class SecurityMonitor {
                 }
             }
             processIntrusionAlarmsState();
-            sendHeartbeat("SecurityMonitor", 0);
+            sendHeartbeat("SecurityMonitor", em.ParticipantId);
             Thread.sleep( Delay );
         }
     }

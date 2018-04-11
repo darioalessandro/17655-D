@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat;
 
 public class MessageManagerInterface
 {
-	private long ParticipantId = -1;				// This processes ID
+	public long ParticipantId = -1;				// This processes ID
 	private RMIMessageManagerInterface em = null;	// Message manager interface object
 	private String DEFAULTPORT = "1099";			// Default message manager port
 
@@ -412,6 +412,30 @@ public class MessageManagerInterface
 		    } // catch
 
 	    } else {
+
+			throw new ParticipantNotRegisteredException( "Participant not registered" );
+
+		} // if
+
+	} // UnRegister
+
+	public void UnRegister(long participantId) throws ParticipantNotRegisteredException, RegistrationException
+	{
+		if (participantId != -1)
+		{
+			try
+			{
+				em.UnRegister(participantId);
+
+			} // try
+
+			catch (Exception e)
+			{
+				throw new RegistrationException( "Error unregistering" + e );
+
+			} // catch
+
+		} else {
 
 			throw new ParticipantNotRegisteredException( "Participant not registered" );
 

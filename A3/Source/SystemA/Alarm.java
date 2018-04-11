@@ -45,7 +45,7 @@ class Alarm {
     }
 
 
-    void sendHeartbeat(String name, int processId) throws Exception {
+    void sendHeartbeat(String name, long processId) throws Exception {
         System.out.println("HEARTBEAT" + "." + name + "." + processId);
         em.SendMessage(new Message( (int) 12, "HEARTBEAT" + "." + name + "." + processId));
     }
@@ -61,7 +61,7 @@ class Alarm {
         while(!Done) {
             try {
                 flushMessages();
-                sendHeartbeat(alarmName, 0);
+                sendHeartbeat(alarmName, em.ParticipantId);
                 Thread.sleep(Delay);
                 Message msg = new Message( (int) 10, "ALARM." + alarmName + "." + (Active ? "ACTIVE":"INACTIVE"));
                 em.SendMessage(msg);

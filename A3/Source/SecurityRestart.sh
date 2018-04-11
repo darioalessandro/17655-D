@@ -19,7 +19,7 @@ ECHO STARTING Security Monitor
 java -cp ${CLASS_PATH} SystemC/ServiceMaintenanceConsole &
 
 ECHO STARTING Security Monitor
-java -cp ${CLASS_PATH} SystemA/SecurityMonitor &
+java -cp ${CLASS_PATH} Shared/SecurityMonitor &
 
 ECHO STARTING DOOR BREAK
 java -cp ${CLASS_PATH} SystemA/DoorBreak &

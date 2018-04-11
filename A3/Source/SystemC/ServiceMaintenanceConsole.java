@@ -19,7 +19,7 @@ class Process {
 
     @Override
     public String toString() {
-        return name + " " + participantId + " " + lastSeen;
+        return "name: " + name + " participantId: " + participantId + " lastSeen: " + lastSeen;
     }
 }
 
@@ -34,9 +34,11 @@ class ServiceMaintenanceConsole {
     Map<String, Process> connectedDevices = new HashMap<>();
     int moduleId = 12;
     int DeviceWatchdog = 10000;             // millis to wait before prunning the device.
+    MessageWindow mw;
 
     ServiceMaintenanceConsole(String args[]) throws Exception {
         em = MessageManagerInterface.register(args);
+        setupUI();
     }
 
     void run() throws Exception {
@@ -72,7 +74,7 @@ class ServiceMaintenanceConsole {
                 .filter(entry -> {
                     boolean shouldPrune = new Date().getTime() - entry.getValue().lastSeen.getTime() > DeviceWatchdog;
                     if (shouldPrune) {
-                        System.out.println("Removing device " + entry.getKey());
+                        mw.WriteMessage("Removing device " + entry.getKey());
                         try {
                             em.UnRegister(entry.getValue().participantId);
                         } catch (Exception e) {
@@ -82,10 +84,15 @@ class ServiceMaintenanceConsole {
                     return !shouldPrune;
                 })
                 .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+        mw.WriteMessage("***" + " count: " + connectedDevices.size());
+        for(Map.Entry<String, Process> s : connectedDevices.entrySet()) {
+            mw.WriteMessage(s.getValue().toString());
+        }
+        mw.WriteMessage("***");
+    }
 
-        System.out.println(Arrays.toString(connectedDevices.entrySet().toArray()));
-
-
+    void setupUI() {
+        mw = new MessageWindow("Service Maintenance Console", 0, 0);
     }
 
     public static void main(String args[]) throws Exception {

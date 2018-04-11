@@ -205,8 +205,6 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 		else
 				l.DisplayStatistics( "Get message queue request from ID: " + id + ". ID not found.");
 
-		fo
-
 		return temp;
 
 	} // GetMessageList

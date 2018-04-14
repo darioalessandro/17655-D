@@ -19,6 +19,6 @@ class MotionDetector {
 
     public static void main(String args[]) throws Exception {
         Alarm MotionDetector = new Alarm("MotionDetector", args);
-        MotionDetector.run();
+        MotionDetector.start();
     }
 }

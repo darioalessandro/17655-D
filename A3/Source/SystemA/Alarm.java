@@ -14,20 +14,19 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import shared.*;
 
-class Alarm {
+class Alarm extends shared.Component {
 
     public Message Msg = null;                    // Message object
     public MessageQueue eq = null;                // Message Queue
     public int MsgId = 0;                        // User specified message ID
-    public MessageManagerInterface em = null;   // Interface object to the message manager
     public int Delay = 2500;                    // The loop delay (2.5 seconds)
     public boolean Done = false;                // Loop termination flag
     public boolean Active = false;
-    public String alarmName = null;
 
     Alarm(String alarmName, String args[]) throws Exception {
-        this.alarmName = alarmName;
+        this.componentName = alarmName;
         em = MessageManagerInterface.register(args);
         Indicator i = new Indicator(alarmName, 0, 0, 0);
         i.repaint();
@@ -44,12 +43,6 @@ class Alarm {
         });
     }
 
-
-    void sendHeartbeat(String name, long processId) throws Exception {
-        System.out.println("HEARTBEAT" + "." + name + "." + processId);
-        em.SendMessage(new Message( (int) 12, "HEARTBEAT" + "." + name + "." + processId));
-    }
-
     void flushMessages()  throws Exception {
         eq = em.GetMessageQueue();
         for ( int i = 0; i < eq.GetSize(); i++ ) {
@@ -57,17 +50,10 @@ class Alarm {
         }
     }
 
+    @Override
     public void run() throws Exception {
-        while(!Done) {
-            try {
-                flushMessages();
-                sendHeartbeat(alarmName, em.ParticipantId);
-                Thread.sleep(Delay);
-                Message msg = new Message( (int) 10, "ALARM." + alarmName + "." + (Active ? "ACTIVE":"INACTIVE"));
-                em.SendMessage(msg);
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        flushMessages();
+        Message msg = new Message( (int) 10, "ALARM." + componentName + "." + (Active ? "ACTIVE":"INACTIVE"));
+        em.SendMessage(msg);
     }
 }

@@ -19,6 +19,6 @@ class DoorBreak {
 
     public static void main(String args[]) throws Exception {
         Alarm doorBreak = new Alarm("DoorBreak", args);
-        doorBreak.run();
+        doorBreak.start();
     }
 }

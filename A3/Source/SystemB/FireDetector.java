@@ -11,20 +11,13 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import shared.*;
 
-class FireDetector extends Thread {
-
-    public Message Msg = null;                    // Message object
-    public MessageQueue eq = null;                // Message Queue
-    public int MsgId = 0;                        // User specified message ID
-    public MessageManagerInterface em = null;   // Interface object to the message manager
-    public int Delay = 2500;                    // The loop delay (2.5 seconds)
-    public boolean Done = false;                // Loop termination flag
+class FireDetector extends shared.Component {
     public boolean Active = false;
-    public String alarmName = null;
 
     FireDetector(String alarmName, String args[]) throws Exception {
-        this.alarmName = alarmName;
+        this.componentName = alarmName;
         em = MessageManagerInterface.register(args);
         Indicator i = new Indicator(alarmName, 0, 0, 0);
         i.repaint();
@@ -42,28 +35,13 @@ class FireDetector extends Thread {
     }
 
     @Override
-    public void run() {
-        while(!Done) {
-            try {
-                Message msg = new Message( (int) 10, "FIREDETECTOR." + alarmName + "." + (Active ? "ACTIVE":"INACTIVE"));
-                Thread.sleep(Delay);
-                em.SendMessage(msg);
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public void run() throws Exception {
+        em.SendMessage(new Message( (int) 10, "FIREDETECTOR." + componentName + "." + (Active ? "ACTIVE":"INACTIVE")));
     }
 
     public static void main(String args[]) throws Exception {
         ArrayList<Thread> arrThreads = new ArrayList<Thread>();
         FireDetector fireDetector1 = new FireDetector("Fire_Detector1", args);
-        FireDetector fireDetector2 = new FireDetector("Fire_Detector2", args);
         fireDetector1.start();
-        fireDetector2.start();
-        arrThreads.add(fireDetector1);
-        arrThreads.add(fireDetector2);
-        for (int i = 0; i < arrThreads.size(); i++) {
-            arrThreads.get(i).join();
-        }
     }
 }

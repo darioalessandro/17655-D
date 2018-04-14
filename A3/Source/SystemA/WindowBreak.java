@@ -19,6 +19,6 @@ class WindowBreak {
 
     public static void main(String args[]) throws Exception {
         Alarm WindowBreak = new Alarm("WindowBreak", args);
-        WindowBreak.run();
+        WindowBreak.start();
     }
 }

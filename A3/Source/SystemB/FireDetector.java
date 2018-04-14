@@ -39,7 +39,6 @@ class FireDetector extends shared.Component {
         int length = eq.GetSize();
         for ( int i = 0; i < length; i++ ) {
             Message msg  = eq.GetMessage();
-            System.out.println("msg: " + msg.GetMessageId() + " : " + msg.GetMessage());
         }
     }
 

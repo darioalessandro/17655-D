@@ -19,11 +19,26 @@ class SecurityMonitor extends shared.Component {
     MessageWindow mw = null;
     Indicator fireAlarmActiveIndicator;
     Indicator intrusionAlarmIndicator;
+    Indicator systemArmedIndicator;
+    boolean systemArmed = false;
 
     SecurityMonitor(String args[]) throws Exception {
         componentName = "Security Monitor";
         em = MessageManagerInterface.register(args);    // Interface object to the message manager
         setupUI();
+        systemArmedIndicator= new Indicator("System Disarmed", 0, 0, 0);
+        systemArmedIndicator.repaint();
+        systemArmedIndicator.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                systemArmed = !systemArmed;
+                if (systemArmed) {
+                    systemArmedIndicator.SetLampColorAndMessage("System Armed", Color.green);
+                } else {
+                    systemArmedIndicator.SetLampColorAndMessage("System Disarmed", Color.black);
+                }
+            }
+        });
     }
 
     @Override
@@ -40,6 +55,24 @@ class SecurityMonitor extends shared.Component {
         processIntrusionAlarmsState();
         processFireDetectorsState();
         em.SendMessage(new Message( (int) 11, "SPRINKLER." + componentName + "." + (this.isAnyFireDetectorActive ? "ACTIVE":"INACTIVE")));
+        intrusionAlarmIndicator.SetLampColorAndMessage("Intrusion_Alarm",this.isAnyIntrusionAlarmActive ? Color.red : Color.black);
+        fireAlarmActiveIndicator.SetLampColorAndMessage("Fire_Alarm",this.isAnyFireDetectorActive ? Color.red : Color.black);
+        if (this.systemArmed) {
+            mw.WriteMessage("***Intrusion report:");
+            for (Map.Entry<String, Boolean> alarm : intrusionAlarmsState.entrySet()) {
+                mw.WriteMessage(alarm.getKey() + " = " + (alarm.getValue() ? "ACTIVE" : "INACTIVE"));
+            }
+            mw.WriteMessage("***");
+            mw.WriteMessage("***Fire report:");
+            for (Map.Entry<String, Boolean> alarm : fireDetectorsState.entrySet()) {
+                mw.WriteMessage(alarm.getKey() + " = " + (alarm.getValue() ? "ACTIVE" : "INACTIVE"));
+            }
+            mw.WriteMessage("***");
+        } else {
+            mw.WriteMessage("System disarmed");
+        }
+        intrusionAlarmIndicator.repaint();
+        fireAlarmActiveIndicator.repaint();
     }
 
     void setupUI() {
@@ -86,7 +119,7 @@ class SecurityMonitor extends shared.Component {
         } else {
             this.isAnyIntrusionAlarmActive = false;
         }
-        intrusionAlarmIndicator.SetLampColorAndMessage("Intrusion_Alarm",this.isAnyIntrusionAlarmActive ? Color.red : Color.black);
+
     }
 
     void processFireDetectorsState() {
@@ -106,7 +139,6 @@ class SecurityMonitor extends shared.Component {
         } else {
             this.isAnyFireDetectorActive = false;
         }
-        fireAlarmActiveIndicator.SetLampColorAndMessage("Fire_Alarm",this.isAnyFireDetectorActive ? Color.red : Color.black);
     }
 
     void cancelIntrutionAlarm() {

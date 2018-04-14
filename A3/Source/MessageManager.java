@@ -20,11 +20,13 @@ import java.net.*;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
+import java.util.concurrent.locks.*;
 
 public class MessageManager extends UnicastRemoteObject implements RMIMessageManagerInterface
 {
 	static Vector<MessageQueue> MessageQueueList;	// This is the list of message queues.
 	static RequestLogger l;  					// This is a request logger - Logger is a private inner class
+	private final ReentrantLock lock = new ReentrantLock();
 
 	public MessageManager() throws RemoteException
 	{
@@ -81,12 +83,12 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 	synchronized public long Register() throws RemoteException
 	{
 		// Create a new queue and add it to the list of message queues.
-
+		lock.lock();
 		MessageQueue mq = new MessageQueue();
 		MessageQueueList.add( mq );
 
 		l.DisplayStatistics( "Register message. Issued ID = " + mq.GetId() );
-
+		lock.unlock();
 		return mq.GetId();
 
 	} // Register
@@ -105,6 +107,7 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 
 	synchronized public void UnRegister(long id) throws RemoteException
 	{
+		lock.lock();
 		MessageQueue mq;
 		boolean found = false;
 
@@ -129,6 +132,7 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 			l.DisplayStatistics( "Unregistered ID::" + id );
 		else
 			l.DisplayStatistics( "Unregister error. ID:"+ id + " not found.");
+		lock.unlock();
 	} // Register
 
 	/***************************************************************************
@@ -146,6 +150,7 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 
 	synchronized public void SendMessage(Message m ) throws RemoteException
 	{
+		lock.lock();
 		MessageQueue mq;
 		// For every queue on the list, add the message.
 		System.out.println("received message " + m.GetMessage());
@@ -159,7 +164,7 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 		} // for
 
 		l.DisplayStatistics( "Incoming message posted from ID: " + m.GetSenderId() );
-
+		lock.unlock();
 	} // SendMessage
 
 	/***************************************************************************
@@ -176,6 +181,7 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 
 	synchronized public MessageQueue GetMessageQueue( long id ) throws RemoteException
 	{
+		lock.lock();
 		MessageQueue mq, temp =  null;
 		boolean found = false;
 
@@ -200,11 +206,12 @@ public class MessageManager extends UnicastRemoteObject implements RMIMessageMan
 
 		} // for
 
+		lock.unlock();
+
 		if (found)
 				l.DisplayStatistics( "Get message queue request from ID: " + id + ". Message queue returned. length: " + temp.size());
 		else
 				l.DisplayStatistics( "Get message queue request from ID: " + id + ". ID not found.");
-
 		return temp;
 
 	} // GetMessageList

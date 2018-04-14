@@ -34,13 +34,25 @@ class FireDetector extends shared.Component {
         });
     }
 
+    void flushMessages()  throws Exception {
+        MessageQueue eq = em.GetMessageQueue();
+        int length = eq.GetSize();
+        for ( int i = 0; i < length; i++ ) {
+            Message msg  = eq.GetMessage();
+            System.out.println("msg: " + msg.GetMessageId() + " : " + msg.GetMessage());
+        }
+    }
+
     @Override
     public void run() throws Exception {
-        em.SendMessage(new Message( (int) 10, "FIREDETECTOR." + componentName + "." + (Active ? "ACTIVE":"INACTIVE")));
+        flushMessages();
+        String cmd = "FIREDETECTOR." + componentName + "." + (Active ? "ACTIVE":"INACTIVE");
+        System.out.println("state " + cmd);
+        Message m = new Message( (int) 10, cmd);
+        em.SendMessage(m);
     }
 
     public static void main(String args[]) throws Exception {
-        ArrayList<Thread> arrThreads = new ArrayList<Thread>();
         FireDetector fireDetector1 = new FireDetector("Fire_Detector1", args);
         fireDetector1.start();
     }

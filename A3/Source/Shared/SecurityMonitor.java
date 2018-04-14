@@ -10,11 +10,10 @@ import shared.*;
 
 class SecurityMonitor extends shared.Component {
     int SECURITY_MONITOR_CANCEL_SECURITY_ALARM = 10000;
-    MessageQueue eq = null;               // Message Queue
-    int MsgId = 0;                        // User specified message ID
-    Map<String,Boolean> alarmsState = new HashMap<>();
-    boolean fireAlarmActive = false;
-    boolean isAnyAlarmActive = false;
+    Map<String,Boolean> intrusionAlarmsState = new HashMap<>();
+    Map<String,Boolean> fireDetectorsState = new HashMap<>();
+    boolean isAnyFireDetectorActive = false;
+    boolean isAnyIntrusionAlarmActive = false;
     boolean wasIntrusionAlertCancelled = false;
     Date alarmTransitionedToActive = new Date();
     MessageWindow mw = null;
@@ -29,15 +28,18 @@ class SecurityMonitor extends shared.Component {
 
     @Override
     public void run() throws Exception {
-        eq = em.GetMessageQueue();
-        for ( int i = 0; i < eq.GetSize(); i++ ) {
+        MessageQueue eq = em.GetMessageQueue();
+        int length = eq.GetSize();
+        for ( int i = 0; i < length; i++ ) {
             Message msg  = eq.GetMessage();
-            System.out.println(msg.GetMessage());
+            System.out.println("msg: " + msg.GetMessageId() + " : " + msg.GetMessage());
             if ( msg.GetMessageId() == 10 ) {
                 processMessage(msg);
             }
         }
         processIntrusionAlarmsState();
+        processFireDetectorsState();
+        em.SendMessage(new Message( (int) 11, "SPRINKLER." + componentName + "." + (this.isAnyFireDetectorActive ? "ACTIVE":"INACTIVE")));
     }
 
     void setupUI() {
@@ -60,40 +62,62 @@ class SecurityMonitor extends shared.Component {
         System.out.println(Arrays.toString(parsedCommmand));
         if (parsedCommmand.length > 0) {
             if (parsedCommmand[0].equals("ALARM") && parsedCommmand.length == 3) {
-                alarmsState.put(parsedCommmand[1], parsedCommmand[2].equals("ACTIVE"));
+                intrusionAlarmsState.put(parsedCommmand[1], parsedCommmand[2].equals("ACTIVE"));
+            } else if (parsedCommmand[0].equals("FIREDETECTOR") && parsedCommmand.length == 3) {
+                fireDetectorsState.put(parsedCommmand[1], parsedCommmand[2].equals("ACTIVE"));
             }
         }
     }
 
     void processIntrusionAlarmsState() {
-        boolean isAnyAlarmActive = false;
-        for (Map.Entry<String, Boolean> alarm : alarmsState.entrySet()) {
+        boolean isAnyIntrusionAlarmActive = false;
+        for (Map.Entry<String, Boolean> alarm : intrusionAlarmsState.entrySet()) {
             if (alarm.getValue()) {
-                isAnyAlarmActive = true;
+                isAnyIntrusionAlarmActive = true;
                 continue;
             }
         }
-        System.out.println("isAnyAlarmActive " + isAnyAlarmActive + " this.isAnyAlarmActive " + this.isAnyAlarmActive);
-        if (isAnyAlarmActive) {
-            if (!this.isAnyAlarmActive) {
+        System.out.println("isAnyIntrusionAlarmActive " + isAnyIntrusionAlarmActive + " this.isAnyIntrusionAlarmActive " + this.isAnyIntrusionAlarmActive);
+        if (isAnyIntrusionAlarmActive) {
+            if (!this.isAnyIntrusionAlarmActive) {
                 alarmTransitionedToActive = new Date();
             }
-            this.isAnyAlarmActive = true;
+            this.isAnyIntrusionAlarmActive = true;
         } else {
-            this.isAnyAlarmActive = false;
+            this.isAnyIntrusionAlarmActive = false;
         }
-        intrusionAlarmIndicator.SetLampColorAndMessage("Intrusion_Alarm",this.isAnyAlarmActive ? Color.red : Color.black);
+        intrusionAlarmIndicator.SetLampColorAndMessage("Intrusion_Alarm",this.isAnyIntrusionAlarmActive ? Color.red : Color.black);
+    }
+
+    void processFireDetectorsState() {
+        boolean isAnyFireDetectorActive = false;
+        for (Map.Entry<String, Boolean> alarm : fireDetectorsState.entrySet()) {
+            if (alarm.getValue()) {
+                isAnyFireDetectorActive = true;
+                continue;
+            }
+        }
+        System.out.println("isAnyFireDetectorActive " + isAnyFireDetectorActive + " this.isAnyFireDetectorActive " + this.isAnyFireDetectorActive);
+        if (isAnyFireDetectorActive) {
+            if (!this.isAnyFireDetectorActive) {
+                alarmTransitionedToActive = new Date();
+            }
+            this.isAnyFireDetectorActive = true;
+        } else {
+            this.isAnyFireDetectorActive = false;
+        }
+        fireAlarmActiveIndicator.SetLampColorAndMessage("Fire_Alarm",this.isAnyFireDetectorActive ? Color.red : Color.black);
     }
 
     void cancelIntrutionAlarm() {
-        if (isAnyAlarmActive &&
+        if (isAnyIntrusionAlarmActive &&
                 new Date().getTime() - alarmTransitionedToActive.getTime() < SECURITY_MONITOR_CANCEL_SECURITY_ALARM) {
-            isAnyAlarmActive = false;
+            isAnyIntrusionAlarmActive = false;
         }
     }
 
     void stopIntrutionAlarm() {
-        isAnyAlarmActive = false;
+        isAnyIntrusionAlarmActive = false;
     }
 
     public static void main(String args[]) throws Exception {

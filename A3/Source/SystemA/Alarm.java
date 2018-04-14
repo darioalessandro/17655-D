@@ -17,11 +17,6 @@ import java.awt.event.*;
 import shared.*;
 
 class Alarm extends shared.Component {
-
-    public Message Msg = null;                    // Message object
-    public MessageQueue eq = null;                // Message Queue
-    public int MsgId = 0;                        // User specified message ID
-    public int Delay = 2500;                    // The loop delay (2.5 seconds)
     public boolean Done = false;                // Loop termination flag
     public boolean Active = false;
 
@@ -44,8 +39,9 @@ class Alarm extends shared.Component {
     }
 
     void flushMessages()  throws Exception {
-        eq = em.GetMessageQueue();
-        for ( int i = 0; i < eq.GetSize(); i++ ) {
+        MessageQueue eq = em.GetMessageQueue();
+        int length = eq.GetSize();
+        for ( int i = 0; i < length; i++ ) {
             Message msg  = eq.GetMessage();
         }
     }
@@ -53,7 +49,6 @@ class Alarm extends shared.Component {
     @Override
     public void run() throws Exception {
         flushMessages();
-        Message msg = new Message( (int) 10, "ALARM." + componentName + "." + (Active ? "ACTIVE":"INACTIVE"));
-        em.SendMessage(msg);
+        em.SendMessage(new Message( (int) 10, "ALARM." + componentName + "." + (Active ? "ACTIVE":"INACTIVE")));
     }
 }
